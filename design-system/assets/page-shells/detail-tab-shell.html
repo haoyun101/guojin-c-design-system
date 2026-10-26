@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<title>二级页·吸顶tab外壳 v3.23.0</title>
+<!-- 二级页面外壳(data-level=2:边距&模块间距 24)。详情/分类等二级页常用「吸顶下划线 tab」。
+     ★tab = 复用 C04『tab-下划线-二级』(参考实现 assets/components/title-tab-bar.html;类名 .tabbar.teq.l2 / .tab.sel/.un / .ul),勿重画;
+       此处仅给它套上 position:sticky 实现吸顶(同 list-shell 表头吸顶机制)。
+     ★模块间距由 main 容器 gap 单点保证(二级=24),模块塞进 .gj-module,勿各自加 margin。
+     吸顶 tab 切换 JS 见 title-tab-bar.html。AI 只填模块内容;外壳数值禁改(P0)。-->
+<style>
+:root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+--CB1:#FFF;--CB2:#F2F4F8;--CT1:#0F0F1B;--CT3:#55555E;--CT4:#9A9AA2;--CP0:#F93838;--CL1:#EEE;
+--sb:88px;--nav:88px;--tab:98px;--home:68px;
+--pad2:var(--SP6);--gap2:var(--SP6)}
+*{box-sizing:border-box;margin:var(--SP0)}body{background:var(--H14);font-family:"PingFang SC",sans-serif}
+.shell{width:750px;margin:var(--SP5) auto;background:var(--CB2);position:relative;overflow:auto;max-height:1334px}
+.statusbar{height:var(--sb);background:var(--CB1)}
+.navbar{height:var(--nav);background:var(--CB1);display:flex;align-items:center;padding:var(--SP0) var(--SP6);font-size:36px;color:var(--CT1);font-weight:500;gap:var(--SP4)}
+.navbar .back{width:48px;height:48px;display:flex;align-items:center;color:var(--CT1);font-size:40px}
+/* ★ 吸顶下划线 tab = C04 tab-下划线-二级(复用),加 sticky 吸顶 */
+.tabbar{display:flex;align-items:flex-start;position:sticky;top:0;z-index:10;background:var(--CB1);border-bottom:1px solid var(--CL1)}
+.teq{padding:var(--SP4) var(--SP6)}.teq .tab{flex:1}
+.tab{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.tab .x{white-space:nowrap}.l2 .tab .x{font-size:32px;line-height:48px}
+.tab.sel .x{color:var(--CT1);font-weight:500}
+.tab.un .x{color:var(--CT3);font-weight:400;padding-bottom:var(--SP2)}
+.ul{width:24px;height:6px;border-radius:10px;background:var(--CP0);margin-top:2px}
+/* ★ 模块间距单点:main gap(二级24) */
+main{display:flex;flex-direction:column;gap:var(--gap2);padding:var(--gap2) var(--pad2) calc(var(--tab) + var(--home) + var(--SP6))}
+.gj-module{background:var(--CB1);border-radius:var(--RD6);padding:var(--SP5);color:var(--CT3);font-size:26px;display:flex;align-items:center}
+.gj-module .tag{font-size:20px;color:var(--CT4);margin-left:auto}
+.m-tall{height:240px}.m-mid{height:160px}
+</style><style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--H14:#373746;}
+</style>
+</head><body>
+<div class="shell" data-level="2">
+<div class="statusbar"></div>
+<div class="navbar"><span class="back">‹</span>二级页标题</div>
+<div class="tabbar teq l2">
+  <div class="tab sel"><span class="x">标签1</span><div class="ul"></div></div>
+  <div class="tab un"><span class="x">标签2</span></div>
+  <div class="tab un"><span class="x">标签3</span></div>
+</div>
+<main>
+<section class="gj-module m-tall">模块1 · 二级页模块间距=24(容器 gap 单点)<span class="tag">[待] 内容</span></section>
+<section class="gj-module m-mid">模块2 · 边距24 · 卡内20<span class="tag">C-xx</span></section>
+<section class="gj-module m-mid">模块3 · 吸顶 tab 滚动时固定在顶<span class="tag">C-xx</span></section>
+<section class="gj-module m-tall">模块4<span class="tag">[待] 内容</span></section>
+<section class="gj-module m-mid">模块5<span class="tag">C-xx</span></section>
+</main>
+</div></body></html>

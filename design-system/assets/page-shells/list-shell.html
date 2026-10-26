@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>list-shell 列表页外壳 v3.10.0</title>
+<!-- 基于 base-mobile(data-level=2,二级页边距24);吸顶表头插槽 + 列表区。
+     排序表头规范见 C14 列表表头(references/components.md 十四):容器高 60、列头右对齐、无分割线;
+     排序图标一律用库内 sort-triangle 三态(默认 common/sort-triangle.svg 灰 / 升序 sort-triangle-up.svg 红 / 降序 sort-triangle-down.svg 红;激活列加 .active 列名转 --CS1),
+     禁止手敲排序箭头字符(双向箭头 / 上下三角符号)或用 CSS 拼三角(违反图标规则,会被 check-page.py 拦)。
+     AI 只填 .row 内容;外壳数值禁改(P0);涨跌色必用 --CS1/--CS2。 -->
+<style>
+:root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+--CB1:#FFF;--CB2:#F2F4F8;--CT1:#0F0F1B;--CT3:#55555E;--CS1:#F93838;--CS2:#05B063;--CL1:#EEE;--sb:88px;--nav:88px}
+*{box-sizing:border-box;margin:var(--SP0)}body{background:var(--H14);font-family:"PingFang SC",sans-serif}
+.shell{width:750px;margin:var(--SP5) auto;background:var(--CB2);min-height:1334px;position:relative}
+.statusbar{height:var(--sb)}.navbar{height:var(--nav);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:500;color:var(--CT1)}
+.thead{position:sticky;top:0;display:flex;align-items:center;height:60px;background:var(--CB2);padding:var(--SP0) var(--SP6);font-size:24px;color:var(--CT3)}
+.thead .col{flex:1}
+.thead .col.name{text-align:left}
+.thead .sortable{display:flex;align-items:center;justify-content:flex-end;gap:var(--SP1);cursor:pointer}
+.thead .sortable.active{color:var(--CS1)}
+.sort-ic{width:16px;height:24px}
+.list{background:var(--CB1);border-radius:var(--RD6);margin:var(--SP0) var(--SP6)}
+.row{display:flex;align-items:center;height:96px;padding:var(--SP0) var(--SP5);border-bottom:1px solid var(--CL1);font-size:28px;color:var(--CT1)}
+.row.two{height:112px}.row:last-child{border-bottom:0}
+.row .num{flex:1;text-align:right}
+.up{color:var(--CS1)}.down{color:var(--CS2)}
+</style><style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--H14:#373746;}
+</style>
+</head><body>
+<div class="shell"><div class="statusbar"></div><div class="navbar">列表标题</div>
+<div class="thead"><span class="col name">名称</span><span class="col sortable active">最新价<img class="sort-ic" src="../icons/common/sort-triangle-down.svg" alt="降序"></span><span class="col sortable">涨跌幅<img class="sort-ic" src="../icons/common/sort-triangle.svg" alt="可排序"></span></div>
+<div class="list">
+<div class="row"><span style="flex:1">示例项</span><span class="num">12.34</span><span class="num up">+1.23%</span></div>
+<div class="row"><span style="flex:1">示例项</span><span class="num">56.78</span><span class="num down">-0.45%</span></div>
+</div></div></body></html>

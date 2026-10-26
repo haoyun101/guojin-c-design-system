@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=750">
+<meta name="gj-bom" content="C09 进度条; references/components.md 第九章; design-tokens.css: --CP0, --CB1, [待] --CB2, --font-num; assets/fonts/GJType-Medium.ttf; 图标: 无">
+<title>C09 进度条 Progress Bar · 参考实现 · DS v4.1.1</title>
+<style>
+@font-face{
+  font-family:"GJType";
+  font-display:swap;
+  font-weight:500;
+  src:url("../fonts/GJType-Medium.ttf") format("truetype");
+}
+:root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+
+  --CP0:#F93838;
+  --CT1:#0F0F1B;
+  --CT3:#55555E;
+  --CB1:#FFFFFF;
+  --CB2:#F2F4F8;
+  --CL1:#DDDDDD;
+  --font-sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-num:"GJType","PingFang SC",system-ui,sans-serif;
+  
+}
+[data-theme="dark"]{
+  --CT1:#FFFFFF;
+  --CT3:#87878D;
+  --CB1:#161824;
+  --CB2:#0F0F1B;
+  --CL1:#373746;
+}
+*{box-sizing:border-box}
+html,body{margin:var(--SP0);min-height:100%;background:var(--CB2);color:var(--CT1);font-family:var(--font-sans)}
+body{width:100%;max-width:750px;margin:var(--SP0) auto;padding:var(--SP6)}
+button,input{font:inherit}
+.demo-main{display:flex;flex-direction:column;gap:var(--SP6)}
+.demo-head,.demo-section{background:var(--CB1);border:1px solid var(--CL1);border-radius:var(--RD4);padding:var(--SP6)}
+.demo-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--SP6)}
+.demo-title{margin:var(--SP0);font-size:36px;line-height:1.5;font-weight:600}
+.demo-subtitle,.demo-note{margin:var(--SP0);color:var(--CT3);font-size:20px;line-height:1.5}
+.demo-kicker{font-size:20px;line-height:1.5;color:var(--CP0);font-weight:500}
+.demo-section{display:flex;flex-direction:column;gap:var(--SP6)}
+.demo-section h2{margin:var(--SP0);font-size:32px;line-height:1.5;font-weight:600}
+.demo-section h3{margin:var(--SP0);font-size:24px;line-height:1.5;font-weight:500}
+.theme-toggle{height:56px;border:1px solid var(--CL1);border-radius:var(--RD4);background:var(--CB1);color:var(--CT1);padding:var(--SP0) var(--SP6);font-size:24px;white-space:nowrap;cursor:pointer}
+.controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--SP6);align-items:end}
+.control{display:flex;flex-direction:column;gap:var(--SP2);min-width:0}
+.control-label{font-size:20px;color:var(--CT3);line-height:1.5}
+.range-row{display:flex;align-items:center;gap:var(--SP4)}
+.progress-range{width:100%;height:44px;margin:var(--SP0);accent-color:var(--CP0);cursor:pointer}
+.range-value{min-width:68px;color:var(--CP0);font-family:var(--font-num);font-size:20px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;text-align:right}
+.value-toggle{height:56px;display:inline-flex;align-items:center;gap:var(--SP3);padding:var(--SP0) var(--SP4);border:1px solid var(--CL1);border-radius:var(--RD4);color:var(--CT1);font-size:24px;white-space:nowrap}
+.value-toggle input{width:24px;height:24px;margin:var(--SP0);accent-color:var(--CP0)}
+.preview-stage{width:100%;min-height:176px;border:1px solid var(--CL1);border-radius:var(--RD4);padding:var(--SP7) var(--SP6);display:flex;align-items:center}
+.source-list{margin:var(--SP0);padding-left:var(--SP6);color:var(--CT3);font-size:20px;line-height:1.5}
+.bom-table{width:100%;border-collapse:collapse;font-size:20px;line-height:1.5}
+.bom-table th,.bom-table td{padding:var(--SP3) var(--SP2);border-bottom:1px solid var(--CL1);text-align:left;vertical-align:top}
+.bom-table th{color:var(--CT3);font-weight:500}
+.bom-table code{color:var(--CP0);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:20px}
+
+.gj-progress{
+  --progress:0;
+  position:relative;
+  width:100%;
+  height:32px;
+}
+.gj-progress__track{
+  position:absolute;
+  top:10px;
+  right:0;
+  left:0;
+  height:12px;
+  overflow:hidden;
+  border-radius:var(--RD9); /* 胶囊 */
+  background:var(--CB2);
+}
+.gj-progress__fill{
+  width:calc(var(--progress) * 1%);
+  height:100%;
+  border-radius:inherit; /* 跟随轨道 */
+  background:var(--CP0);
+  transition:width 220ms ease;
+}
+.gj-progress__value{
+  position:absolute;
+  top:0;
+  left:clamp(0px,calc(var(--progress) * 1% - 34px),calc(100% - 68px));
+  width:68px;
+  height:32px;
+  border-radius:var(--RD5);
+  background:var(--CB1);
+  border:2px solid var(--CP0);
+  color:var(--CP0);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-num);
+  font-size:20px;
+  font-weight:500;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;
+  white-space:nowrap;
+  transition:left 220ms ease;
+}
+.gj-progress.is-value-hidden .gj-progress__value{display:none}
+
+@media (max-width:620px){
+  body{padding:var(--SP4)}
+  .demo-head{flex-direction:column}
+  .theme-toggle{width:100%}
+  .controls{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<main class="demo-main">
+<section class="demo-head">
+  <div>
+    <div class="demo-kicker">C09 · DS v4.1.1 · 新建无源</div>
+    <h1 class="demo-title">进度条 Progress Bar</h1>
+    <p class="demo-subtitle">百分比进度 · 进度值可显隐 · 750 基准</p>
+  </div>
+  <button class="theme-toggle" id="themeToggle" type="button">切换深色</button>
+</section>
+
+<section class="demo-section">
+  <h2>效果预览</h2>
+  <div class="controls">
+    <label class="control" for="progressRange">
+      <span class="control-label">进度 0–100%</span>
+      <span class="range-row">
+        <input class="progress-range" id="progressRange" type="range" min="0" max="100" value="62">
+        <output class="range-value" id="rangeValue" for="progressRange">62%</output>
+      </span>
+    </label>
+    <label class="value-toggle"><input id="valueToggle" type="checkbox" checked><span>显示进度值</span></label>
+  </div>
+  <div class="preview-stage">
+    <div class="gj-progress" id="playgroundProgress" role="progressbar" aria-label="百分比进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="62" style="--progress:62">
+      <div class="gj-progress__track"><div class="gj-progress__fill"></div></div>
+      <span class="gj-progress__value" aria-hidden="true">62%</span>
+    </div>
+  </div>
+  <p class="demo-note">进度连续变化，组件宽度跟随容器；进度值关闭后仅显示轨道与填充，显示时两端贴边内显、中段对齐进度尖端。</p>
+</section>
+
+<section class="demo-section">
+  <h2>用料清单 BOM</h2>
+  <table class="bom-table">
+    <thead><tr><th>角色</th><th>库内引用</th></tr></thead>
+    <tbody>
+      <tr><td>C09 进度条</td><td><code>references/components.md#九、进度条</code></td></tr>
+      <tr><td>进度填充 / 药丸描边与数字</td><td><code>var(--CP0)</code></td></tr>
+      <tr><td>药丸背景</td><td><code>var(--CB1)</code></td></tr>
+      <tr><td>轨道背景</td><td><code>[待] var(--CB2)</code> · library-index.json 未登记</td></tr>
+      <tr><td>进度值数字</td><td><code>var(--font-num)</code> · GJType Medium 500 · 20px · tnum · 行高 1</td></tr>
+      <tr><td>图标</td><td>无</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="demo-section">
+  <h2>来源说明</h2>
+  <ul class="source-list">
+    <li>组件真值：references/components.md 第九章「进度条 Progress Bar」。</li>
+    <li>颜色实现：CP0、CB1、CB2；数字字体：assets/fonts/GJType-Medium.ttf。</li>
+    <li>本页采用 skill 固化值；不包含 Figma 直读数据。</li>
+  </ul>
+</section>
+</main>
+
+<script>
+(function(){
+  var range=document.getElementById("progressRange");
+  var output=document.getElementById("rangeValue");
+  var toggle=document.getElementById("valueToggle");
+  var progress=document.getElementById("playgroundProgress");
+  var value=progress.querySelector(".gj-progress__value");
+
+  function renderProgress(){
+    var current=Number(range.value);
+    progress.style.setProperty("--progress",current);
+    progress.setAttribute("aria-valuenow",String(current));
+    value.textContent=current+"%";
+    output.value=current+"%";
+    progress.classList.toggle("is-value-hidden",!toggle.checked);
+  }
+
+  range.addEventListener("input",renderProgress);
+  toggle.addEventListener("change",renderProgress);
+  document.getElementById("themeToggle").addEventListener("click",function(){
+    var root=document.documentElement;
+    var dark=root.getAttribute("data-theme")==="dark";
+    root.setAttribute("data-theme",dark?"light":"dark");
+    this.textContent=dark?"切换深色":"切换浅色";
+  });
+  renderProgress();
+})();
+</script>
+</body>
+</html>

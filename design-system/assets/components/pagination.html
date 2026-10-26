@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>分页符 Pagination · 参考实现 · 国金证券设计系统</title>
+<style>
+  :root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+
+    --cp0:var(--R6); --ci4:var(--H6); --ci5:var(--H1); --ci1:var(--H9);
+    --ct1:var(--H9); --ct3:var(--H8); --ct4:var(--H7);
+    --bg:#F6F7F9; --line:#E6E8EC;
+    --grad:linear-gradient(135deg,#FF7067 0%,#F93838 100%);
+  }
+  *{box-sizing:border-box}
+  body{margin:var(--SP0);background:var(--bg);color:var(--ct1);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;padding:var(--SP7) var(--SP5) var(--SP9)}
+  .wrap{max-width:760px;margin:var(--SP0) auto}
+  .top{font-size:13px;color:var(--ct3);margin:var(--SP0) var(--SP0) var(--SP1)}
+  h1{font-size:20px;font-weight:600;margin:var(--SP0) var(--SP0) 0}
+  .sub{font-size:13px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP6)}
+  .card{background:var(--CB1);border:1px solid var(--line);border-radius:var(--RD3);padding:var(--SP5) var(--SP5) var(--SP5);margin:var(--SP0) var(--SP0) var(--SP5)}
+  .h{font-size:14px;font-weight:600;margin:var(--SP0) var(--SP0) var(--SP1)}
+  .hsub{font-size:12px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP4)}
+  .stage{display:flex;align-items:center;justify-content:center;border-radius:var(--RD3);padding:var(--SP6) var(--SP4);margin:var(--SP0) var(--SP0) var(--SP3)}
+  .stage-white{background:var(--CB1);border:1px dashed var(--line)}
+  .stage-color{background:var(--grad)}
+  .cap{font-size:12px;color:var(--ct3);line-height:1.85;margin:var(--SP2) var(--SP0) var(--SP0)}
+  .cap b{color:var(--ct1);font-weight:600}
+  .tok{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;background:var(--CB2);color:var(--CT3);padding:0 var(--SP1);border-radius:var(--RD1)}
+  .modes{font-size:12px;color:var(--ct3);line-height:1.85;margin:var(--SP2) var(--SP0) var(--SP0);padding:var(--SP3) var(--SP3);background:#F8F9FB;border:1px solid var(--line);border-radius:var(--RD2)}
+  .modes b{color:var(--ct1)}
+  .pill{display:inline-block;font-size:11px;color:var(--CT6);background:var(--cp0);border-radius:var(--RD9);padding:0 var(--SP2);margin-left:var(--SP1);vertical-align:middle}
+  button{font:inherit;font-size:13px;color:var(--ct3);background:var(--CB1);border:1px solid var(--line);border-radius:var(--RD2);padding:var(--SP2) var(--SP3);cursor:pointer;margin-top:var(--SP3)}
+  button:hover{background:var(--CB2)}
+
+  /* 整页分页符 */
+  .dots{display:flex;align-items:center;gap:6px}
+  .dot{height:6px;width:6px;border-radius:var(--RD9);transition:width .42s cubic-bezier(.4,0,.2,1),background-color .42s ease}
+  .dots-regular .dot{background:rgba(204,204,204,.5)}
+  .dots-regular .dot.on{width:16px;background:var(--cp0)}
+  .dots-inverse .dot{background:rgba(15,15,27,.2)}
+  .dots-inverse .dot.on{width:16px;background:var(--ci5)}
+
+  /* 滑动分页符 */
+  .track{height:6px;width:60px;border-radius:var(--RD9);background:rgba(204,204,204,.2);position:relative;overflow:hidden}
+  .bar{position:absolute;top:0;bottom:0;left:0;width:40%;border-radius:var(--RD9);background:var(--cp0)}
+  @media (prefers-reduced-motion: no-preference){ .bar.play{animation:slide 2.6s cubic-bezier(.34,1.3,.64,1) infinite alternate} }
+  @keyframes slide{ from{left:0} to{left:60%} }
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB1:#FFFFFF;--CB2:#F2F4F8;--CT3:#55555E;--CT6:#FFFFFF;--H1:#FFFFFF;--H6:#CCCCCC;--H7:#87878D;--H8:#55555E;--H9:#0F0F1B;--R6:#F93838;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="top">国金证券客户端设计系统 · 组件参考实现</p>
+  <h1>分页符 / Pagination</h1>
+  <p class="sub">通用组件层 · 含动画规则 · 设计系统 v3.8.0 · 别人照此实现动画即可保持一致</p>
+
+  <div class="modes">
+    <b>两种触发方式</b>(动画过渡一致,仅触发不同,无任何箭头/按钮控件):<br>
+    · <b>用户交互触发(默认)</b> —— 随用户左右滑动内容翻页,分页符跟随切换。<br>
+    · <b>自动滑动</b> —— 定时自动轮播(banner 等);Banner 循环可首尾跳转,金刚区等不循环、不首尾跳转。<br>
+    下方 demo 以自动循环演示<b>动画效果本身</b>。
+  </div>
+
+  <!-- 整页 常规 -->
+  <div class="card" style="margin-top:var(--SP5)">
+    <p class="h">① 整页分页符 · 常规版</p>
+    <p class="hsub">浅色卡片背景 · banner / 卡片切换 / 整页轮播</p>
+    <div class="stage stage-white"><div class="dots dots-regular" id="d-reg"></div></div>
+    <p class="cap">
+      <b>选中 16×6</b> · <b>未选 6×6</b> · 间距 6 · 高 6 · r999 ·
+      选中 <span class="tok">CP0 #F93838</span> / 未选 <span class="tok">CI4 @50%</span><br>
+      <b>切换动画</b>:旧点宽 16→6、红→灰;新点 6→16、灰→红,同步过渡。
+    </p>
+  </div>
+
+  <!-- 整页 反白 -->
+  <div class="card">
+    <p class="h">② 整页分页符 · 反白版</p>
+    <p class="hsub">banner / 图片 / 彩色背景之上</p>
+    <div class="stage stage-color"><div class="dots dots-inverse" id="d-inv"></div></div>
+    <p class="cap">同尺寸规则 · 选中 <span class="tok">#FFFFFF (CI5)</span> / 未选 <span class="tok">#0F0F1B (CI1) @20%</span>。</p>
+  </div>
+
+  <!-- 滑动 -->
+  <div class="card">
+    <p class="h">③ 滑动分页符</p>
+    <p class="hsub">横滑内容(金刚区侧滑 / 横向列表)— 指示当前可视比例</p>
+    <div class="stage stage-white"><div class="track"><div class="bar play" id="bar"></div></div></div>
+    <p class="cap">
+      <b>滑动槽固定 60×6</b> r999 · 槽 <span class="tok">CI4 @20%</span> · 条 <span class="tok">CP0</span> ·
+      条长 = 前屏显示长度 / 内容总长度 · <b>到头/到底有回弹</b>(demo 用回弹缓动演示)<br>
+      位置:卡片外 距上 16 / 距下 24;卡片内(banner)距下 8。
+    </p>
+    <button onclick="document.getElementById('bar').classList.toggle('play')">暂停 / 播放</button>
+  </div>
+</div>
+
+<script>
+  const reg=document.getElementById('d-reg'), inv=document.getElementById('d-inv');
+  const N=5; let idx=0;
+  function build(el){ el.innerHTML=''; for(let i=0;i<N;i++){ const d=document.createElement('div'); d.className='dot'+(i===0?' on':''); el.appendChild(d);} }
+  build(reg); build(inv);
+  function step(){ idx=(idx+1)%N; [reg,inv].forEach(g=>g.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===idx))); }
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(step,1600);
+</script>
+</body>
+</html>

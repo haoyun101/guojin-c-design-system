@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>行情/个股标签 · 参考实现 · 国金证券设计系统</title>
+<style>
+ :root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+--line:#E6E8EC;--ct1:var(--H9);--ct3:var(--H8);--ct4:var(--H7);--bg:#F6F7F9;--cp0:var(--R6);}
+ *{box-sizing:border-box} body{margin:var(--SP0);background:var(--bg);color:var(--ct1);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:var(--SP7) var(--SP5) var(--SP9)}
+ .wrap{max-width:780px;margin:var(--SP0) auto}
+ .top{font-size:13px;color:var(--ct3);margin:var(--SP0) var(--SP0) var(--SP1)} h1{font-size:20px;font-weight:600;margin:var(--SP0) var(--SP0) 0}
+ .sub{font-size:13px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP5)}
+ .sech{display:flex;align-items:baseline;gap:var(--SP2);margin:var(--SP6) var(--SP0) var(--SP2);padding-left:var(--SP3);border-left:4px solid var(--cp0)}
+ .sech b{font-size:16px;font-weight:600} .sech span{font-size:12px;color:var(--ct4)}
+ .card{background:var(--CB1);border:1px solid var(--line);border-radius:var(--RD3);padding:var(--SP4) var(--SP5);margin:var(--SP0) var(--SP0) var(--SP3)}
+ .h{font-size:13px;font-weight:600;margin:var(--SP0) var(--SP0) var(--SP1)} .hsub{font-size:12px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP3)}
+ table{width:100%;border-collapse:collapse;font-size:12.5px} th,td{text-align:left;padding:var(--SP2) var(--SP2);border-bottom:1px solid var(--CL2);vertical-align:top}
+ th{color:var(--ct4);font-weight:600;font-size:11.5px} td b{color:var(--ct1)}
+ .tok{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--CB2);color:var(--CT3);padding:0 var(--SP1);border-radius:var(--RD1)}
+ .cap{font-size:12px;color:var(--ct3);line-height:1.8;margin:var(--SP2) var(--SP0) var(--SP0)} .cap b{color:var(--ct1)}
+ .row{display:flex;gap:var(--SP2);flex-wrap:wrap;align-items:center;margin:var(--SP1) var(--SP0) var(--SP0)}
+ .gtag{height:32px;display:inline-flex;align-items:center;justify-content:center;padding:var(--SP0) 6px;border-radius:var(--RD1);
+   border:1px solid;background:transparent;font-family:"PingFang SC";font-size:20px;line-height:30px;white-space:nowrap}
+ .red{border-color:var(--CL3);color:var(--R6)} .blue{border-color:var(--CL5);color:var(--B6)} .orange{border-color:var(--CL4);color:#FF7015}
+ .red.fill{background:var(--CB4)} .blue.fill{background:var(--CB14)}
+</style><style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--B6:#2B73FF;--CB1:#FFFFFF;--CB2:#F2F4F8;--CB4:#FFF2F0;--CL3:#F93838;--CL4:#FF8533;--CL5:#2B73FF;--CT3:#55555E;--H7:#87878D;--H8:#55555E;--H9:#0F0F1B;--R6:#F93838;}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB14:rgba(43,115,255,0.08);}
+</style>
+<style>
+/* 本文件引用到的 token(值同 assets/design-tokens.css 浅色) */
+:root{--CL2:#EEEEEE;}
+</style>
+</head>
+<body><div class="wrap">
+ <p class="top">国金证券客户端设计系统 · 业务组件参考实现</p>
+ <h1>个股标签 · Stock Tag</h1>
+ <p class="sub">来源:佣金宝组件库 V2.0 · 应用于个股列表 · 行情场景 · 设计系统 v3.10.0</p>
+
+ <div class="sech"><b>一、构件</b><span>描边款 · 两种填充态</span></div>
+ <div class="card">
+  <p class="h">个股标签(普通 32px · 描边款)</p>
+  <p class="hsub">填充态①:描边 + 透明底(默认)</p>
+  <div class="row">
+   <span class="gtag red">科</span><span class="gtag red">创</span><span class="gtag blue">集合竞价</span><span class="gtag orange">退</span>
+  </div>
+  <p class="hsub" style="margin-top:var(--SP3)">填充态②:描边 + 淡底(边/字同色 + 同色约8%淡底,如「好股」红、「持」蓝)</p>
+  <div class="row">
+   <span class="gtag red fill">好股</span><span class="gtag blue fill">持</span>
+  </div>
+  <table style="margin-top:var(--SP3)">
+   <tr><th>项</th><th>值</th></tr>
+   <tr><td>样式</td><td><b>描边款</b>:1px 实线边框 · <b>两种填充态</b>:① 透明底(默认) ② 淡底(同色约8%,如好股 CB4 #FFF2F0)</td></tr>
+   <tr><td>高度 / 圆角</td><td>H <b>32</b> · 圆角 <b>4</b></td></tr>
+   <tr><td>字体</td><td>PingFang SC Regular <b>20 / 30</b></td></tr>
+   <tr><td>内边距 / 布局</td><td>左右 <b>6</b> · hug 内容(不做竖排/紧凑/图标等特殊处理)</td></tr>
+  </table>
+  <p class="cap">⚠ 个股标签是<b>描边款 · 圆角 4</b>,与通用标签(面性款 · 圆角 6)不同族,不要混。</p>
+ </div>
+
+ <div class="sech"><b>二、配色 3 规则</b><span>按个股类型分组 · 约 25 型</span></div>
+ <div class="card">
+  <p class="h">红 —— 内地为红 + 国际/港股为红</p>
+  <p class="hsub">border <span class="tok">cl3 #F93838</span> · text <span class="tok">cp0 #F93838</span></p>
+  <div class="row">
+   <span class="gtag red">科</span><span class="gtag red">创</span><span class="gtag red">沪</span><span class="gtag red">京</span>
+   <span class="gtag red">注</span><span class="gtag red">融</span><span class="gtag red">优先</span><span class="gtag red">CDR</span>
+   <span class="gtag red">GDR</span><span class="gtag red">基础层</span><span class="gtag red">创新层</span><span class="gtag red">精选层</span>
+   <span class="gtag red">CAS</span><span class="gtag red">VCM</span><span class="gtag red">通</span><span class="gtag red">伦</span><span class="gtag red">AI</span>
+  </div>
+
+  <p class="h" style="margin-top:var(--SP4)">蓝 —— 交易类型 + 持仓为蓝</p>
+  <p class="hsub">border <span class="tok">cl5 #2B73FF</span> · text <span class="tok">cf3 #2B73FF</span></p>
+  <div class="row">
+   <span class="gtag blue">集合竞价</span><span class="gtag blue">集合+连续</span><span class="gtag blue">做市交易</span><span class="gtag blue fill">持</span>
+  </div>
+
+  <p class="h" style="margin-top:var(--SP4)">橙 —— 通用为橙</p>
+  <p class="hsub">border <span class="tok">cl4 #FF8533</span> · text <span class="tok">cf2 #FF7015</span></p>
+  <div class="row">
+   <span class="gtag orange">退</span><span class="gtag orange">警</span>
+   <span class="gtag orange">次新</span><span class="gtag orange">新</span>
+  </div>
+ </div>
+
+ <div class="sech"><b>三、token / 真值</b></div>
+ <div class="card"><table>
+  <tr><th>角色</th><th>token</th><th>值</th></tr>
+  <tr><td>红 描边 / 文字</td><td>cl3 / cp0</td><td>#F93838 / #F93838</td></tr>
+  <tr><td>蓝 描边 / 文字</td><td>cl5 / cf3</td><td>#2B73FF / #2B73FF</td></tr>
+  <tr><td>橙 描边 / 文字</td><td>cl4 / cf2</td><td>#FF8533 / #FF7015</td></tr>
+  <tr><td>高 / 圆角 / 内边距</td><td>—</td><td>32 / 4 / 6</td></tr>
+  <tr><td>字体</td><td>PingFang SC Regular</td><td>20 / 30</td></tr>
+ </table></div>
+
+ <div class="sech"><b>四、下一步</b><span>待你确认</span></div>
+ <div class="card cap" style="font-size:12.5px">
+  确认个股标签(描边款单一型 + 3 配色规则)无误后:<br>
+  ① 并入 <b>C13 标签</b>(通用标签 + 个股标签合成完整 C13)<br>
+  ② 通用 + 个股一起:同步回 Figma(<b>保留原内容、按最新新建组件</b>)<br>
+  ③ 一起升 <b>v3.10.0</b> 打包发布
+ </div>
+</div></body></html>

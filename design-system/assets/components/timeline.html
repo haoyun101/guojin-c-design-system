@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>时间轴 · 参考实现(设计系统 v3.4.1)</title>
+<style>
+@font-face{font-family:"GJType";font-weight:400;src:url(data:font/ttf;base64,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) format("truetype");}
+  :root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+
+    --CP0:#F93838;            /* 品牌红:线 + 未读中心点 + 未读时间 */
+    --CT1:#0F0F1B;            /* 标题(未读) */
+    --CT3:#55555E;            /* 正文(未读) */
+    --CT4:#87878D;            /* 已读统一灰:中心点 + 时间 + 标题 + 正文 */
+    --R1:#FFF2F0;             /* 品牌红浅端:未读外圈填充 */
+    --R3:#FFBAB3;             /* 品牌红:未读外圈描边 */
+    --CL2:#EEEEEE;            /* 线框灰:已读外圈填充 */
+    --H9:#0F0F1B;--H7:#87878D;--H2:#F2F4F8;--H8:#55555E;
+  }
+  *{box-sizing:border-box;margin:var(--SP0);padding:var(--SP0);}
+  body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:var(--H2);color:var(--H9);padding:var(--SP6);max-width:820px;margin:var(--SP0) auto;line-height:1.6;}
+  h1{font-size:22px;margin-bottom:var(--SP1);}
+  .sub{font-size:13px;color:var(--H7);margin-bottom:var(--SP5);line-height:1.7;}
+  h2{font-size:16px;margin:var(--SP6) var(--SP0) var(--SP3);padding-left:var(--SP3);border-left:6px solid var(--CP0);}
+  .card{background:var(--CB1);border:1px solid var(--H3);border-radius:var(--RD3);padding:var(--SP6);margin-bottom:var(--SP4);}
+  .tag{font-size:13px;color:var(--H8);}
+  .hint{font-size:12px;color:var(--H7);margin-top:var(--SP2);}
+
+  /* ===== 圆点(真实 750 值)=====
+     状态由父级 .item 驱动:默认未读,.item.read 切已读 */
+  .dot{position:relative;width:15px;height:15px;border-radius:50%;flex:0 0 auto;
+       background:rgba(255,242,240,.70);border:1px solid rgba(255,186,179,.70);}
+  .dot::after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;
+       top:50%;left:50%;transform:translate(-50%,-50%);background:var(--CP0);}
+  .read .dot{background:rgba(238,238,238,.70);border:0;}     /* 已读:CL2@70% 填充,删内描边 */
+  .read .dot::after{background:var(--CT4);}
+
+  /* 单态对照(静态展示用,显式类) */
+  .dot.def{background:rgba(255,242,240,.70);border:1px solid rgba(255,186,179,.70);}
+  .dot.def::after{background:var(--CP0);}
+  .dot.clk{background:rgba(238,238,238,.70);border:0;}
+  .dot.clk::after{background:var(--CT4);}
+
+  /* 放大对照 */
+  .big{position:relative;width:120px;height:120px;border-radius:50%;}
+  .big::after{content:"";position:absolute;width:72px;height:72px;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
+  .big.def{background:rgba(255,242,240,.70);border:8px solid rgba(255,186,179,.70);}
+  .big.def::after{background:var(--CP0);}
+  .big.clk{background:rgba(238,238,238,.70);border:0;}
+  .big.clk::after{background:var(--CT4);}
+  .stk{display:flex;gap:var(--SP8);align-items:center;}
+  .col{display:flex;flex-direction:column;align-items:center;gap:var(--SP2);}
+
+  /* ===== 竖向虚线(红、1px宽、段4px/隔4px;恒红不随态变)===== */
+  .vline{width:1px;background:repeating-linear-gradient(to bottom,var(--CP0) 0 4px,transparent 4px 8px);}
+
+  /* ===== 多节点串联 / 7×24 用例 ===== */
+  .tl{display:flex;flex-direction:column;}
+  .item{display:flex;gap:var(--SP6);cursor:pointer;}     /* 横向:圆点/轴 ↔ 内容 = 24px */
+  .axis{display:flex;flex-direction:column;align-items:center;width:15px;flex:0 0 15px;}
+  .seg{flex:1 1 auto;min-height:18px;}
+  .content{padding-bottom:var(--s-48);}                    /* 纵向:两节点内容间距 = 48px */
+  .item:last-child .content{padding-bottom:var(--SP0);}
+
+  /* 状态驱动文字配色 */
+  .time{font-size:24px;line-height:15px;height:15px;display:flex;align-items:center;
+        font-family:"GJType","PingFang SC",sans-serif;color:var(--CP0);}  /* 未读 时间红;数字 GJType */
+  .news{font-size:26px;color:var(--CT1);margin-top:var(--SP2);font-weight:500;}  /* 未读 标题 CT1 */
+  .news .d{font-size:24px;color:var(--CT3);font-weight:400;margin-top:var(--SP1);line-height:1.5;} /* 未读 正文 CT3 */
+  .read .time,.read .news,.read .news .d{color:var(--CT4);}                /* 已读 全转 CT4 灰 */
+
+  table{border-collapse:collapse;width:100%;font-size:13px;margin-top:var(--SP1);}
+  th,td{border:1px solid var(--H3);padding:var(--SP2) var(--SP2);text-align:left;}
+  th{background:var(--CB35);}
+  .sw{display:inline-block;width:11px;height:11px;border-radius:var(--RD1);vertical-align:-1px;margin-right:var(--SP1);border:1px solid var(--CL1);}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB1:#FFFFFF;--CB4:#FFF2F0;--CL1:#DDDDDD;--H3:#E2E8F2;--H4:#EEEEEE;--R6:#F93838;}
+</style>
+<style>
+/* 本文件引用到的 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB35:#FCFDFF;--s-48:48px;}
+</style>
+</head>
+<body>
+  <h1>时间轴 · 参考实现 v3.4.1</h1>
+  <div class="sub">竖版时间轴 · 来源:佣金宝组件库 V2.0(节点 2988:43712,变量绑定与国金证券 DS 同套)· 通用组件层 · 命名 时间轴-竖版-{常规/未读 | 点击后/已读}。连接线红色虚线、dash 段 4px、恒红;未读外圈 R1@70% 填充 + 1px R3@70% 描边,已读外圈 CL2@70% 填充、删内描边。状态驱动文字配色:未读 时间 --CP0/标题 --CT1/正文 --CT3,已读 全 --CT4 灰。数字用 GJType。</div>
+
+  <h2>① 单节点两态</h2>
+  <div class="card">
+    <div class="stk">
+      <div class="col"><div class="tag"><b>真实 15px</b></div><div class="dot def"></div><div class="tag">未读</div><div class="dot clk"></div><div class="tag">已读</div></div>
+      <div class="col"><div class="tag"><b>放大 · 未读</b></div><div class="big def"></div></div>
+      <div class="col"><div class="tag"><b>放大 · 已读</b></div><div class="big clk"></div></div>
+    </div>
+  </div>
+
+  <h2>② 多节点串联 + 状态配色(点击任意节点可切换 未读/已读)</h2>
+  <div class="card">
+    <div class="tl" id="tl1">
+      <div class="item read">
+        <div class="axis"><div class="dot"></div><div class="vline seg"></div></div>
+        <div class="content"><div class="time">09:30</div><div class="news">节点标题一<div class="d">已读态:圆点 + 时间 + 标题 + 正文统一转 CT4 灰,连接线保持红。</div></div></div>
+      </div>
+      <div class="item">
+        <div class="axis"><div class="dot"></div><div class="vline seg"></div></div>
+        <div class="content"><div class="time">09:28</div><div class="news">节点标题二<div class="d">未读态:时间红 CP0、标题 CT1、正文 CT3;时间与圆点垂直居中,内容距轴 24px。</div></div></div>
+      </div>
+      <div class="item">
+        <div class="axis"><div class="dot"></div><div class="vline seg"></div></div>
+        <div class="content"><div class="time">09:25</div><div class="news">节点标题三<div class="d">虚线红色,线宽 1px、段 4px、隔 4px;两节点纵向间距 48px。</div></div></div>
+      </div>
+      <div class="item">
+        <div class="axis"><div class="dot"></div></div>
+        <div class="content"><div class="time">09:20</div><div class="news">节点标题四<div class="d">末节点无后续连线。</div></div></div>
+      </div>
+    </div>
+    <div class="hint">提示:点击节点在「未读↔已读」间切换,演示状态驱动配色;连接线恒红不随态变。</div>
+  </div>
+
+  <h2>③ 7×24 快讯用例</h2>
+  <div class="card">
+    <div class="tl" id="tl2">
+      <div class="item read">
+        <div class="axis"><div class="dot"></div><div class="vline seg"></div></div>
+        <div class="content"><div class="time">10:02</div><div class="news">某指数早盘走强<div class="d">已读:整条转灰。7×24 模式左侧时间轴 + 右侧快讯,时间与圆点居中。</div></div></div>
+      </div>
+      <div class="item">
+        <div class="axis"><div class="dot"></div><div class="vline seg"></div></div>
+        <div class="content"><div class="time">09:47</div><div class="news">板块异动播报<div class="d">未读:时间红、标题深、正文次灰。</div></div></div>
+      </div>
+      <div class="item">
+        <div class="axis"><div class="dot"></div></div>
+        <div class="content"><div class="time">09:31</div><div class="news">开盘综述<div class="d">末条无连线。</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>真值与 token(v3.4.1)</h2>
+  <div class="card">
+    <table>
+      <tr><th>项</th><th>未读(常规)</th><th>已读(点击后)</th><th>token</th></tr>
+      <tr><td>外圈容器</td><td>15px</td><td>15px</td><td>—</td></tr>
+      <tr><td>中心实心圆</td><td>9px · 红</td><td>9px · 灰</td><td><span class="sw" style="background:var(--R6)"></span>--CP0 / <span class="sw" style="background:var(--H7)"></span>--CT4</td></tr>
+      <tr><td>外圈填充</td><td>--R1 @70%</td><td>--CL2 @70%</td><td><span class="sw" style="background:var(--CB4)"></span>--R1 / <span class="sw" style="background:var(--H4)"></span>--CL2</td></tr>
+      <tr><td>外圈内描边</td><td>1px · --R3 @70%</td><td>无(不展示)</td><td><span class="sw" style="background:var(--R3)"></span>--R3 / —</td></tr>
+      <tr><td>连接线</td><td colspan="2">红色虚线 · 线宽 1px · 段 4px / 隔 4px(恒红)</td><td><span class="sw" style="background:var(--R6)"></span>--CP0</td></tr>
+      <tr><td>时间</td><td>--CP0(红)</td><td>--CT4(灰)</td><td><span class="sw" style="background:var(--R6)"></span>--CP0 / <span class="sw" style="background:var(--H7)"></span>--CT4 · GJType</td></tr>
+      <tr><td>标题</td><td>--CT1</td><td>--CT4</td><td><span class="sw" style="background:var(--H9)"></span>--CT1 / <span class="sw" style="background:var(--H7)"></span>--CT4 · PF Medium 32/48</td></tr>
+      <tr><td>正文</td><td>--CT3</td><td>--CT4</td><td><span class="sw" style="background:var(--H8)"></span>--CT3 / <span class="sw" style="background:var(--H7)"></span>--CT4 · PF Regular 28/42</td></tr>
+      <tr><td>间距</td><td colspan="2">横向 圆点↔内容 24px;纵向 两节点 48px;时间与圆点垂直居中</td><td>—</td></tr>
+    </table>
+  </div>
+
+  <script>
+    document.querySelectorAll('#tl1 .item, #tl2 .item').forEach(function(it){
+      it.addEventListener('click', function(){ it.classList.toggle('read'); });
+    });
+  </script>
+</body>
+</html>

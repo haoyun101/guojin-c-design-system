@@ -1,0 +1,23 @@
+# 设计规范合规校验 · GitHub Actions 模板
+# 用法:把本文件复制到你仓库根目录的 .github/workflows/ 下,
+#       并把下面的 SKILL 路径改成你仓库里 skill 的实际位置。
+name: design-compliance
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: 合规校验(skill 自检 + 页面 check-page,P0 即失败)
+        run: |
+          # 自动找版本目录(版本无关);如放在子目录请改成实际路径
+          SKILL_DIR="$(ls -d 国金证券客户端设计系统-skill_v* 2>/dev/null | sort -V | tail -1)"
+          SKILL_DIR="${SKILL_DIR:-国金证券客户端设计系统-skill_v3.10.0}"
+          bash "$SKILL_DIR/scripts/check-all.sh" .

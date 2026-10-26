@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=750">
+<title>Toast · 参考实现(设计系统 v3.1.0)</title>
+<style>
+  :root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+
+    --H9:#0F0F1B;--H7:#87878D;--H2:#F2F4F8;--H1:#FFFFFF;
+    --CP0:#F93838;
+    --CB19:rgba(0,0,0,.6);   /* 白版背景(#000000 60%) */
+    --CB8:#282A35;            /* 黑版背景(已拍板) */
+    --CT6:#FFFFFF;            /* 反白文字 */
+    --CI5:#FFFFFF;            /* 反白图标 */
+                  /* 新增圆角档(已拍板) */
+  }
+  *{box-sizing:border-box;margin:var(--SP0);padding:var(--SP0);}
+  body{font-family:"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;background:var(--H2);width:750px;padding:var(--SP6);}
+  .blk{font-size:32px;font-weight:600;color:var(--H9);margin:var(--SP7) var(--SP0) var(--SP1);padding-left:var(--SP3);border-left:8px solid var(--CP0);}
+  .blk:first-child{margin-top:var(--SP0);}
+  .cap{font-size:19px;color:var(--H7);margin:var(--SP1) var(--SP0) var(--SP3);line-height:1.6;}
+  .card{background:var(--H1);border-radius:var(--RD4);margin-bottom:var(--SP4);overflow:hidden;}
+  .lab{font-size:19px;color:var(--H7);padding:var(--SP3) var(--SP6) var(--SP0);}
+  .lab b{color:var(--H9);font-weight:600;}
+  .stage{padding:var(--SP5) var(--SP6) var(--SP6);display:flex;flex-wrap:wrap;gap:var(--SP5) var(--SP7);align-items:flex-start;}
+  .cell{display:flex;flex-direction:column;gap:var(--SP2);align-items:flex-start;}
+  .tag{font-size:18px;color:var(--H7);}
+
+  /* ===== Toast(全部 750 实测真值) ===== */
+  .toast{display:inline-flex;align-items:center;justify-content:center;gap:var(--SP4);
+    padding:36px var(--SP8);border-radius:var(--RD5);color:var(--CT6);
+    font-size:32px;line-height:48px;font-weight:400;white-space:nowrap;}
+  .toast.dark{background:var(--CB8);}
+  .toast:not(.dark){background:var(--CB19);}
+  .toast .ico{width:36px;height:36px;flex:0 0 auto;}
+  .toast .ico svg{display:block;width:100%;height:100%;}
+  /* 纯文字:无图标 */
+  .toast.text{gap:var(--SP0);}
+  /* 双行:高168 */
+  .toast.two{white-space:normal;max-width:520px;text-align:left;}
+  /* 上下图文:纵排,高244,图标100 */
+  .toast.vert{flex-direction:column;gap:var(--SP4);padding:var(--SP8);min-width:260px;}
+  .toast.vert .ico{width:100px;height:100px;}
+  /* loading 旋转 */
+  .spin{transform-origin:50% 50%;animation:sp 1s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+
+  /* 摆放示意 mini phone */
+  .phone{position:relative;width:300px;height:600px;background:var(--CB1);border:2px solid var(--H3);border-radius:var(--RD7);overflow:hidden;flex:0 0 auto;}
+  .phone .bar{height:36px;background:var(--CB2);}
+  .phone .bottombar{position:absolute;left:0;right:0;bottom:0;height:60px;background:var(--CB2);border-top:1px solid var(--H3);}
+  .mini{display:inline-flex;align-items:center;gap:var(--SP2);background:var(--CB19);color:var(--CT6);border-radius:var(--RD3);padding:var(--SP3) var(--SP5);font-size:15px;white-space:nowrap;}
+  .mini .d{width:18px;height:18px;}
+  .pos-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);}
+  .pos-bottom{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);}
+  .mk{font-size:15px;color:var(--H7);position:absolute;}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB1:#FFFFFF;--CB2:#F2F4F8;--H3:#E2E8F2;}
+</style>
+</head>
+<body>
+
+<div class="blk">Toast(节点 86:2124 · 母组件直读)</div>
+<div class="cap">族=toast · 命名 toast-{纯文字|左右图文|上下图文}-{白版|黑版}(-{状态})。通用真值:背景 白版 --CB19(#000000 60%)/ 黑版 --CB8(#282A35);圆角 --RD5(新增档);padding 40/36(上下图文 40/40);文字↔图标间距 16;文字 PingFang SC Regular 32(S4)行高48 反白 --CT6;图标反白 --CI5;内容最多 12 字。多场景复用,归通用组件层。</div>
+
+<div class="card">
+  <div class="lab"><b>toast-纯文字</b>　无图标 · 单行高 120 / 双行高 168(超 12 字换行)· 左右内容间距 40</div>
+  <div class="stage">
+    <div class="cell"><span class="tag">纯文字-单行 · 白版</span><span class="toast text">提示文案不超过十二个字</span></div>
+    <div class="cell"><span class="tag">纯文字-单行 · 黑版</span><span class="toast text dark">提示文案不超过十二个字</span></div>
+    <div class="cell"><span class="tag">纯文字-双行 · 白版</span><span class="toast text two">提示文案较长时自动换行最多展示到第二行结束位置</span></div>
+    <div class="cell"><span class="tag">纯文字-双行 · 黑版</span><span class="toast text two dark">提示文案较长时自动换行最多展示到第二行结束位置</span></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="lab"><b>toast-左右图文</b>(母组件「常规」)　高 120 · 图标 36 + 文字 · 间距 16 · 状态:成功 / 失败</div>
+  <div class="stage">
+    <div class="cell"><span class="tag">左右图文-成功 · 白版</span><span class="toast"><span class="ico" data-ic="ok"></span><span>操作成功的提示文案</span></span></div>
+    <div class="cell"><span class="tag">左右图文-失败 · 白版</span><span class="toast"><span class="ico" data-ic="no"></span><span>操作失败的提示文案</span></span></div>
+    <div class="cell"><span class="tag">左右图文-成功 · 黑版</span><span class="toast dark"><span class="ico" data-ic="ok"></span><span>操作成功的提示文案</span></span></div>
+    <div class="cell"><span class="tag">左右图文-失败 · 黑版</span><span class="toast dark"><span class="ico" data-ic="no"></span><span>操作失败的提示文案</span></span></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="lab"><b>toast-上下图文</b>　高 244 · 最小宽 260(6字),超 6 字按固定边距放大 · 图标 100 + 文字 · 间距 16 · 状态:成功 / 失败 / 警告 / 加载中</div>
+  <div class="stage">
+    <div class="cell"><span class="tag">成功 · 白版</span><span class="toast vert"><span class="ico" data-ic="ok"></span><span>操作成功</span></span></div>
+    <div class="cell"><span class="tag">失败 · 白版</span><span class="toast vert"><span class="ico" data-ic="no"></span><span>操作失败</span></span></div>
+    <div class="cell"><span class="tag">警告 · 白版</span><span class="toast vert"><span class="ico" data-ic="warn"></span><span>警告提示</span></span></div>
+    <div class="cell"><span class="tag">加载中 · 白版</span><span class="toast vert"><span class="ico" data-ic="load"></span><span>加载中</span></span></div>
+    <div class="cell"><span class="tag">成功 · 黑版</span><span class="toast vert dark"><span class="ico" data-ic="ok"></span><span>操作成功</span></span></div>
+    <div class="cell"><span class="tag">加载中 · 黑版</span><span class="toast vert dark"><span class="ico" data-ic="load"></span><span>加载中</span></span></div>
+  </div>
+  <div class="cap" style="padding:var(--SP0) var(--SP6) var(--SP4);">状态图标为占位示意(✓/✕/!/◌),实际走图标体系(iconfont/SVG)。</div>
+</div>
+
+<div class="card">
+  <div class="lab"><b>摆放</b>　居中(屏幕中间)/ 底部(距底部内容 30)</div>
+  <div class="stage">
+    <div class="cell"><span class="tag">居中摆放</span>
+      <div class="phone"><div class="bar"></div><div class="bottombar"></div>
+        <span class="mini pos-center"><span class="d" data-ic="ok"></span>操作成功</span>
+      </div>
+    </div>
+    <div class="cell"><span class="tag">底部摆放(距底部内容 30)</span>
+      <div class="phone"><div class="bar"></div><div class="bottombar"></div>
+        <span class="mini pos-bottom"><span class="d" data-ic="ok"></span>操作成功</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cap" style="margin-top:var(--SP5);">参考实现 · 设计系统 v3.1.0 · 规格见 references/components.md「六、Toast」· 黑版背景固定 #282A35(方案1,不随主题翻转)。</div>
+
+<script>
+  const ICONS = {
+    ok:'<svg viewBox="0 0 36 36" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="15"/><path d="M11 18.5l4.5 4.5L25 13"/></svg>',
+    no:'<svg viewBox="0 0 36 36" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="15"/><path d="M12.5 12.5l11 11M23.5 12.5l-11 11"/></svg>',
+    warn:'<svg viewBox="0 0 36 36" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="15"/><path d="M18 10v10"/><circle cx="18" cy="25.5" r="1.4" fill="#fff" stroke="none"/></svg>',
+    load:'<svg class="spin" viewBox="0 0 36 36" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="18" cy="18" r="15" stroke="rgba(255,255,255,.3)"/><path d="M18 3a15 15 0 0 1 15 15"/></svg>'
+  };
+  document.querySelectorAll('[data-ic]').forEach(el=>{ el.innerHTML = ICONS[el.getAttribute('data-ic')] || ''; });
+</script>
+</body>
+</html>

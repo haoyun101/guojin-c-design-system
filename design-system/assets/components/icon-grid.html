@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>图标宫格 Icon Grid · 参考实现 · 国金证券设计系统</title>
+<style>
+  :root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+ --line:#E6E8EC; --ct1:var(--H9); --ct3:var(--H8); --ct4:var(--H7); --bg:#F6F7F9; --cp0:var(--R6); --ci4:var(--H6); }
+  *{box-sizing:border-box}
+  body{margin:var(--SP0);background:var(--bg);color:var(--ct1);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;padding:var(--SP7) var(--SP5) var(--SP9)}
+  .wrap{max-width:760px;margin:var(--SP0) auto}
+  .top{font-size:13px;color:var(--ct3);margin:var(--SP0) var(--SP0) var(--SP1)}
+  h1{font-size:20px;font-weight:600;margin:var(--SP0) var(--SP0) 0}
+  .sub{font-size:13px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP1)}
+  .onenote{font-size:12px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP6)}
+  /* 一级:章 */
+  .sec{margin:var(--SP0) var(--SP0) var(--SP7)}
+  .sech{display:flex;align-items:baseline;gap:var(--SP2);margin:var(--SP0) var(--SP0) var(--SP1);padding-left:var(--SP3);border-left:4px solid var(--cp0)}
+  .sech b{font-size:16px;font-weight:600;color:var(--ct1)}
+  .sech span{font-size:12px;color:var(--ct4)}
+  .secsub{font-size:12px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP3);padding-left:var(--SP4)}
+  /* 二级:卡 */
+  .card{background:var(--CB1);border:1px solid var(--line);border-radius:var(--RD3);padding:var(--SP4) var(--SP5) var(--SP3);margin:var(--SP0) var(--SP0) var(--SP3)}
+  .h{font-size:13px;font-weight:600;margin:var(--SP0) var(--SP0) var(--SP1);color:var(--ct1)}
+  .hsub{font-size:12px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP3)}
+  .cap{font-size:12px;color:var(--ct3);line-height:1.8;margin:var(--SP2) var(--SP0) var(--SP0)}
+  .cap b{color:var(--ct1)}
+  .tok{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;background:var(--CB2);color:var(--CT3);padding:0 var(--SP1);border-radius:var(--RD1)}
+  .badge{display:inline-block;font-size:11px;color:var(--CT6);background:var(--R6);border-radius:var(--RD9);padding:0 var(--SP2);margin-left:var(--SP1);vertical-align:middle}
+  .badge.g{background:var(--H6)}
+  .rule{font-size:12px;color:var(--ct3);line-height:1.9;margin:var(--SP0)}
+  .rule b{color:var(--ct1)}
+  .rule li{margin:0 var(--SP0)}
+  .cell{display:flex;flex-direction:column;align-items:center}
+  .lab{font-family:"PingFang SC",sans-serif;color:var(--CT3);text-align:center;line-height:36px;font-size:24px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:var(--SP2)}
+  .row{display:flex;align-items:flex-start}
+  .sb{position:relative;overflow:hidden;background:var(--CB1);border:1px dashed var(--line);border-radius:var(--RD2)}
+  .si{transform-origin:top left}
+  .scroller{display:flex;gap:14px;overflow-x:auto;padding:var(--SP1) 2px 2px;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
+  .scroller::-webkit-scrollbar{height:0}
+  .ccell{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;width:84px;scroll-snap-align:start}
+  .clab{font-size:14px;color:var(--CT3);margin-top:var(--SP1);text-align:center;white-space:nowrap}
+  .track{height:6px;width:60px;border-radius:var(--RD9);background:rgba(204,204,204,.2);position:relative;margin:var(--SP3) auto 0}
+  .bar{position:absolute;top:0;bottom:0;left:0;width:42%;border-radius:var(--RD9);background:var(--cp0);transition:left .1s linear}
+  .bar.rb{transition:left .34s cubic-bezier(.34,1.3,.64,1)}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB1:#FFFFFF;--CB2:#F2F4F8;--CT3:#55555E;--CT6:#FFFFFF;--H6:#CCCCCC;--H7:#87878D;--H8:#55555E;--H9:#0F0F1B;--R6:#F93838;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="top">国金证券客户端设计系统 · 组件参考实现</p>
+  <h1>图标宫格 / Icon Grid（金刚区）</h1>
+  <p class="sub">来源:佣金宝组件库 V2.0 · 直读真值重建 · 通用组件层 · C12 · 嵌套 C10 / C11 · 设计系统 v3.9.0</p>
+  <p class="onenote">规范模板:演示 icon 槽统一用 C11 占位图-图标(白版)、文案统一用占位代称「名称」;真实使用时替换为渐变 SVG 图标与实际入口名。</p>
+
+  <!-- 一、构件 -->
+  <div class="sec">
+    <div class="sech"><b>一、构件 · 单元格</b><span>原子构件,两档;一切排布由它组合而成</span></div>
+    <div class="card">
+      <div style="display:flex;gap:var(--SP9);align-items:flex-end;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div class="cell" style="width:138px" data-cell="64" data-label="名称"></div>
+          <div style="font-size:12px;color:var(--ct3);margin-top:var(--SP2)"><b style="color:var(--ct1)">64px 档</b> · 盒 138×108 · icon 64 · 文案≤5字</div>
+        </div>
+        <div style="text-align:center">
+          <div class="cell" style="width:145px" data-cell="88" data-label="名称"></div>
+          <div style="font-size:12px;color:var(--ct3);margin-top:var(--SP2)"><b style="color:var(--ct1)">88px 档</b> · 盒 145×132 · icon 88 · 文案≤6字</div>
+        </div>
+      </div>
+      <p class="cap">icon = <b>固定正方形槽位</b>(圆角随上传图标自带)· icon↔文案 <span class="tok">8 / s-1</span> · 文案 <span class="tok">CT3 #55555E · S7 24/36</span> 居中单行 · <b>无点击/按压态</b>。</p>
+    </div>
+  </div>
+
+  <!-- 二、排布变体 -->
+  <div class="sec">
+    <div class="sech"><b>二、排布变体 / Layout Variants</b><span>单元格的全部组合方式 · 除「横滑」外均无分页符</span></div>
+    <p class="secsub">基准 750 通栏:列间距 3 · 左右边距 24 · 行距 24(s-3)· 行高 64档108 / 88档132</p>
+
+    <div class="card">
+      <p class="h">2.1 通栏 · 5 列 × 1 行(标准金刚区)<span class="badge g">无分页符</span></p>
+      <p class="hsub">5×138 + 4×3 + 2×24 = 750 恰好通栏 · 入口=5 的默认款</p>
+      <div class="sb" id="sb-51"></div>
+    </div>
+
+    <div class="card">
+      <p class="h">2.2 通栏 · 5 列 × 2 行<span class="badge g">无分页符</span></p>
+      <p class="hsub">入口 6–10 · 行距 24</p>
+      <div class="sb" id="sb-52"></div>
+    </div>
+
+    <div class="card">
+      <p class="h">2.3 通栏 · 4 列(等分撑满)<span class="badge g">无分页符</span></p>
+      <p class="hsub">入口≤4,更舒展</p>
+      <div class="sb" id="sb-41"></div>
+    </div>
+
+    <div class="card">
+      <p class="h">2.4 通栏 · 88px × 4 列<span class="badge g">无分页符</span></p>
+      <p class="hsub">重点/运营入口 · cell 145</p>
+      <div class="sb" id="sb-88"></div>
+    </div>
+
+    <div class="card">
+      <p class="h">2.5 卡片宫格 · 718<span class="badge g">无分页符</span></p>
+      <p class="hsub">白卡 r32 嵌灰底容器(置于 16 边距页)</p>
+      <div class="sb" id="sb-card"></div>
+    </div>
+
+    <div class="card">
+      <p class="h">2.6 横滑 · 单行超一屏<span class="badge">带分页符 · 可滑动</span></p>
+      <p class="hsub">唯一带分页符的排布 · 嵌套 C10 分页符-滑动 · <b>左右拖动下面这排试试</b></p>
+      <div class="scroller" id="scroller"></div>
+      <div class="track"><div class="bar" id="bar"></div></div>
+      <p class="cap">滑动槽固定 60×6 r999 · 槽 <span class="tok">CI4 @20%</span> · 条 <span class="tok">CP0</span> · 条长 = 前屏 / 总长 · 到头/到底<b>回弹</b> · 右侧露出半格暗示可滑。</p>
+    </div>
+  </div>
+
+  <!-- 三、嵌套与使用规则 -->
+  <div class="sec">
+    <div class="sech"><b>三、嵌套与使用规则</b><span>组件关系 + 选用判据</span></div>
+    <div class="card">
+      <ul class="rule" style="padding-left:var(--SP5);margin:var(--SP0)">
+        <li><b>嵌套关系</b>:C12 图标宫格 → icon 槽兜底 = <b>C11 占位图-图标</b>(加载中/失败);横滑排布 → <b>C10 分页符-滑动</b>。其余排布一律不嵌分页符。</li>
+        <li><b>列数判据</b>:入口≤4 → 4列舒展;=5 → 5列标准;6–10 → 5列×2行;超多/运营横排 → 横滑+分页符。</li>
+        <li><b>文案</b>:核心 4 字最佳,超出截断省略;容量上限 64档≤5字 / 88档≤6字;末格沿用「全部功能」入口约定。</li>
+        <li><b>槽位</b>:icon 为正方形固定槽位,圆角由上传图标决定,组件不强加;无点击/按压态。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 四、token -->
+  <div class="sec">
+    <div class="sech"><b>四、token / 真值汇总</b><span>与 skill v3.8.0 零漂移</span></div>
+    <div class="card">
+      <div style="display:flex;gap:var(--SP5);flex-wrap:wrap;font-size:12px;color:var(--ct3);line-height:1.6">
+        <div>文案 <span class="tok">CT3 #55555E · S7 24/36</span></div>
+        <div>icon 底 <span class="tok">CB3 #F2F4F8</span></div>
+        <div>icon↔文案 <span class="tok">8 (s-1)</span></div>
+        <div>列间距 <span class="tok">3</span></div>
+        <div>边距 <span class="tok">24</span></div>
+        <div>行距 <span class="tok">24 (s-3)</span></div>
+        <div>分页符 <span class="tok">C10 滑动 60×6 · CP0/CI4@20%</span></div>
+        <div>icon 兜底 <span class="tok">C11 占位图-图标</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function gjSpatial(value,kind){var map=kind==='RD'?{"0": "RD0", "4": "RD1", "8": "RD2", "12": "RD3", "16": "RD4", "20": "RD5", "24": "RD6", "32": "RD7", "40": "RD8", "999": "RD9", "6": "RD10"}:{"0": "SP0", "4": "SP1", "8": "SP2", "12": "SP3", "16": "SP4", "20": "SP5", "24": "SP6", "32": "SP7", "40": "SP8", "60": "SP9", "80": "SP10"};return map[value] ? "var(--"+map[value]+")" : value+"px";}
+
+  var LP='<path fill="{F}" d="M41.9919 25.2042C45.9698 25.2042 49.1945 21.9799 49.1945 18.0025C49.1945 14.0251 45.9698 10.8007 41.9919 10.8007C38.0141 10.8007 34.7893 14.0251 34.7893 18.0025C34.7893 21.9799 38.0141 25.2042 41.9919 25.2042Z"/>'
+    +'<path fill="{F}" d="M39.5912 26.5112V36.6089C39.5912 38.2654 38.2466 39.6099 36.5899 39.6127H23.3818C21.7251 39.6099 20.3805 38.2654 20.3805 36.6089V23.4053C20.3805 21.7488 21.7251 20.4043 23.3818 20.4015H33.4808L38.2012 7.45026C25.7449 2.92329 11.9779 9.34784 7.45043 21.8027C2.92292 34.2575 9.34824 48.0228 21.8046 52.5497C34.2609 57.0767 48.0279 50.6522 52.5554 38.1973C54.4815 32.9017 54.4815 27.0983 52.5554 21.8027L39.5912 26.5112Z"/>';
+  function ph(size){
+    var gid='p'+Math.random().toString(36).slice(2,8);
+    var r=Math.round(size*0.182), lg=Math.round(size*0.545);
+    return '<div style="width:'+size+'px;height:'+size+'px;border-radius:'+gjSpatial(r,'RD')+';background:var(--CB2);display:flex;align-items:center;justify-content:center">'
+      +'<svg width="'+lg+'" height="'+lg+'" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="display:block">'
+      +'<defs><linearGradient id="'+gid+'" x1="30" y1="0" x2="30" y2="60" gradientUnits="userSpaceOnUse"><stop stop-color="#FFFFFF" stop-opacity="1"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0.3"/></linearGradient></defs>'
+      + LP.replace(/\{F\}/g,'url(#'+gid+')') + '</svg></div>';
+  }
+  function cell(label,w){var ico=w===88?88:64,box=w===88?145:138;
+    return '<div class="cell" style="width:'+box+'px">'+ph(ico)+'<div class="lab" style="width:'+box+'px">'+label+'</div></div>';}
+  function rowHTML(labels,w,gap,justify){return '<div class="row" style="gap:'+gjSpatial(gap,'SP')+';'+(justify?'justify-content:'+justify+';width:100%':'')+'">'+labels.map(function(l){return cell(l,w);}).join('')+'</div>';}
+  function scaleBox(id,inner,natH,S,natW){natW=natW||750;var el=document.getElementById(id);
+    el.style.width=(natW*S)+'px'; el.style.height=(natH*S)+'px';
+    el.innerHTML='<div class="si" style="width:'+natW+'px;transform:scale('+S+')">'+inner+'</div>';}
+
+  document.querySelectorAll('.cell[data-cell]').forEach(function(el){
+    var w=+el.dataset.cell; el.innerHTML=ph(w)+'<div class="lab" style="width:'+(w===88?145:138)+'px">'+el.dataset.label+'</div>';});
+
+  var S=0.5;
+  // 演示文案统一用占位代称「名称」(规范模板,不绑定具体业务)
+  function nm(n){var a=[];for(var i=0;i<n;i++)a.push('名称');return a;}
+  scaleBox('sb-51','<div style="padding:var(--SP0) var(--SP6)">'+rowHTML(nm(5),64,3)+'</div>',108,S);
+  scaleBox('sb-52','<div style="padding:var(--SP0) var(--SP6);display:flex;flex-direction:column;gap:var(--SP6)">'+rowHTML(nm(5),64,3)+rowHTML(nm(5),64,3)+'</div>',240,S);
+  scaleBox('sb-41','<div style="padding:var(--SP0) var(--SP6)">'+rowHTML(nm(4),64,0,'space-between')+'</div>',108,S);
+  scaleBox('sb-88','<div style="padding:var(--SP0) var(--SP6)">'+rowHTML(nm(4),88,0,'space-between')+'</div>',132,S);
+  var cardInner='<div style="padding:var(--SP4)"><div style="background:var(--CB1);border-radius:var(--RD7);padding:var(--SP6)">'+rowHTML(nm(4),64,0,'space-between')+'</div></div>';
+  scaleBox('sb-card','<div style="background:var(--CB2);width:750px">'+cardInner+'</div>',196,S);
+
+  var labels7=nm(10);   // 2.6 横滑
+  var sc=document.getElementById('scroller'), bar=document.getElementById('bar');
+  sc.innerHTML=labels7.map(function(l){return '<div class="ccell">'+ph(56)+'<div class="clab">'+l+'</div></div>';}).join('');
+  function updateBar(){var max=sc.scrollWidth-sc.clientWidth;var ratio=sc.clientWidth/sc.scrollWidth;
+    var w=Math.max(ratio*100,18);var pos=max>0?sc.scrollLeft/max:0;
+    bar.style.width=w+'%';bar.style.left=(pos*(100-w))+'%';}
+  var rb;
+  sc.addEventListener('scroll',function(){bar.classList.remove('rb');updateBar();
+    clearTimeout(rb);rb=setTimeout(function(){var max=sc.scrollWidth-sc.clientWidth;
+      if(sc.scrollLeft<=0||sc.scrollLeft>=max-1)bar.classList.add('rb');},90);});
+  window.addEventListener('load',updateBar);updateBar();
+</script>
+</body>
+</html>

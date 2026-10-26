@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<title>base-mobile 页面外壳种子 v3.23.0</title>
+<!-- 750 基准外壳:状态栏88+导航88(距顶176)+内容区+底导166(内容98+Home68)。
+     ★模块间距由 <main> 容器 gap 单点保证(布局一致性归容器,勿每模块各自加 margin/height 撑)。
+     用法:每个模块包成 <section class="gj-module">…</section> 塞进 <main>,间距自动 = data-level 对应 gap(一级16/二级24)。
+     data-level="1" = 一级页面(底部 Tab 五页:首页/自选/交易/理财/我的),边距&间距 16;
+     data-level="2" = 二级页面(详情/列表/表单等),边距&间距 24;data-layout="flat|stack" 平铺/堆叠。
+     间距/边距值=foundations「间距」节单一真源(--SP4/--SP6),外壳禁自改(P0)。AI 只填模块内容。-->
+<style>
+:root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+--CB1:#FFF;--CB2:#F2F4F8;--CT1:#0F0F1B;--CT3:#55555E;--CP0:#F93838;--CL1:#EEE;
+--sb:88px;--nav:88px;--tab:98px;--home:68px;
+          /* 真源 design-tokens 粘入时以真值为准 */
+--pad1:var(--SP4);--pad2:var(--SP6);--gap1:var(--SP4);--gap2:var(--SP6)}
+*{box-sizing:border-box;margin:var(--SP0)}body{background:var(--H14);font-family:"PingFang SC",sans-serif}
+.shell{width:750px;margin:var(--SP5) auto;background:var(--CB2);position:relative;min-height:1334px;overflow:hidden}
+.statusbar{height:var(--sb);background:var(--CB2)}
+.navbar{height:var(--nav);background:var(--CB2);display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--CT1);font-weight:500}
+.shell[data-layout=stack] .hero{height:140px;background:linear-gradient(var(--H1),var(--CB26))}
+.shell[data-layout=stack] main{margin-top:calc(var(--SP0) - 140px + var(--gap))}
+/* ★ 模块间距单点:main 容器 flex-column + gap;模块自身不加 margin */
+main{display:flex;flex-direction:column;gap:var(--gap,var(--SP4));padding:var(--SP0) var(--pad,var(--SP4)) calc(var(--tab) + var(--home) + var(--SP6))}
+.shell[data-level="1"]{--pad:var(--pad1);--gap:var(--gap1)}
+.shell[data-level="2"]{--pad:var(--pad2);--gap:var(--gap2)}
+.gj-module{}                                  /* 模块占位:间距由 main 的 gap 决定,勿自加 margin-top/bottom/height 撑间距 */
+.card{background:var(--CB1);border-radius:var(--RD6);padding:var(--SP5)}  /* 卡内边距20;无 margin */
+.bottomnav{position:absolute;bottom:0;left:0;right:0;height:calc(var(--tab) + var(--home));background:var(--CB1);border-top:1px solid var(--CL1)}
+.bottomnav .slot{height:var(--tab);display:flex;align-items:center;justify-content:center;color:var(--CT3);font-size:24px}
+</style><style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--H1:#FFFFFF;}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB26:rgba(255,255,255,0);}
+</style>
+<style>
+/* 本文件引用到的 token(值同 assets/design-tokens.css 浅色) */
+:root{--H14:#373746;}
+</style>
+</head><body>
+<div class="shell" data-level="1" data-layout="flat">
+<div class="statusbar"></div><div class="navbar">页面标题</div>
+<div class="hero"></div>
+<main>
+<section class="gj-module card">模块1 · 卡内边距20 · 圆角24</section>
+<section class="gj-module card">模块2 · 间距由 main 容器 gap 单点保证(一级16/二级24),非每模块各自 margin</section>
+<section class="gj-module card">模块3 · AI 只把模块塞进 .gj-module;引用登记组件 C01–C15;外壳数值禁改</section>
+</main>
+<div class="bottomnav"><div class="slot">底部导航插槽(用 components/bottom-nav.html 或 bottom-info-bar.html 替换)</div></div>
+</div></body></html>

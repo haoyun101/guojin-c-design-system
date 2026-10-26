@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>标签 Tag · 通用标签 · 参考实现 · 国金证券设计系统</title>
+<style>
+ :root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+--line:#E6E8EC;--ct1:var(--H9);--ct3:var(--H8);--ct4:var(--H7);--bg:#F6F7F9;--cp0:var(--R6);}
+ *{box-sizing:border-box} body{margin:var(--SP0);background:var(--bg);color:var(--ct1);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:var(--SP7) var(--SP5) var(--SP9)}
+ .wrap{max-width:780px;margin:var(--SP0) auto}
+ .top{font-size:13px;color:var(--ct3);margin:var(--SP0) var(--SP0) var(--SP1)} h1{font-size:20px;font-weight:600;margin:var(--SP0) var(--SP0) 0}
+ .sub{font-size:13px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP5)}
+ .req{background:var(--CB11);border:1px solid var(--G19);border-radius:var(--RD3);padding:var(--SP3) var(--SP4);margin:var(--SP0) var(--SP0) var(--SP5);font-size:13px;line-height:1.85}
+ .req b{color:var(--G6)} .req .who{font-size:12px;color:var(--ct4);margin-bottom:var(--SP1)}
+ .sech{display:flex;align-items:baseline;gap:var(--SP2);margin:var(--SP6) var(--SP0) var(--SP2);padding-left:var(--SP3);border-left:4px solid var(--cp0)}
+ .sech b{font-size:16px;font-weight:600} .sech span{font-size:12px;color:var(--ct4)}
+ .card{background:var(--CB1);border:1px solid var(--line);border-radius:var(--RD3);padding:var(--SP4) var(--SP5);margin:var(--SP0) var(--SP0) var(--SP3)}
+ .h{font-size:13px;font-weight:600;margin:var(--SP0) var(--SP0) var(--SP1)} .hsub{font-size:12px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP3)}
+ table{width:100%;border-collapse:collapse;font-size:12.5px} th,td{text-align:left;padding:var(--SP2) var(--SP2);border-bottom:1px solid var(--CL2);vertical-align:top}
+ th{color:var(--ct4);font-weight:600;font-size:11.5px} td b{color:var(--ct1)}
+ .tok{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--CB2);color:var(--CT3);padding:0 var(--SP1);border-radius:var(--RD1)}
+ .tree{font-size:13px;line-height:2;color:var(--ct1)} .tree .mut{color:var(--ct4)} .tree b{color:var(--ct1)}
+ .pill{display:inline-block;font-size:11px;border-radius:var(--RD9);padding:0 var(--SP2);margin-left:var(--SP1);vertical-align:middle}
+ .now{background:var(--R6);color:var(--CT6)} .later{background:var(--H6);color:var(--CT6)}
+ .tagrow{display:flex;gap:var(--SP3);flex-wrap:wrap;align-items:center;margin:var(--SP1) var(--SP0) var(--SP0)}
+ .tag{height:32px;display:inline-flex;align-items:center;justify-content:center;padding:var(--SP0) 6px;border-radius:var(--RD10);
+   font-family:"PingFang SC",sans-serif;font-size:20px;line-height:30px;white-space:nowrap}
+ .tagq{height:32px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;padding:var(--SP0) 6px;border-radius:var(--RD10);color:var(--CT6);
+   font-family:"GJType","DIN Alternate",ui-monospace,monospace;font-weight:600;font-size:24px;line-height:36px;white-space:nowrap}
+ .cap{font-size:12px;color:var(--ct3);line-height:1.8;margin:var(--SP2) var(--SP0) var(--SP0)} .cap b{color:var(--ct1)}
+ .star{color:var(--R6);font-weight:700}
+</style><style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--B6:#2B73FF;--CB1:#FFFFFF;--CB2:#F2F4F8;--CT3:#55555E;--CT4:#87878D;--CT6:#FFFFFF;--G6:#05B063;--H7:#87878D;--H8:#55555E;--H9:#0F0F1B;--J6:#C36E20;--R6:#F93838;}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB13:rgba(249,56,56,0.08);--CB14:rgba(43,115,255,0.08);}
+</style>
+<style>
+/* 本文件引用到的 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB11:rgba(5,176,99,0.05);--CL2:#EEEEEE;--G19:#CDEFE0;--H6:#CCCCCC;}
+</style>
+</head>
+<body><div class="wrap">
+ <p class="top">国金证券客户端设计系统 · 组件参考实现</p>
+ <h1>标签 Tag · 通用标签</h1>
+ <p class="sub">来源:佣金宝组件库 V2.0 · Use Case 5.5.1 · 直读真值重建 · 通用标签 · 设计系统 v3.10.0</p>
+
+ <div class="req">
+  <div class="who">📎 修改要求 · 体验设计-薛也 — 已落地</div>
+  「修改打组逻辑,边距改为 6」→ <b>三型自动布局统一:H32 · 圆角6 · 左右内边距 6 · hug 内容</b>(浅色/深色 px 8→6;涨跌本就是 6)。
+ </div>
+
+ <div class="sech"><b>一、标签结构</b><span>先做通用标签</span></div>
+ <div class="card">
+  <div class="tree">
+   <b>标签 Tag</b><br>
+   ├─ <b>通用标签</b><span class="pill now">本期</span> <span class="mut">(= figma 常规标签)</span><br>
+   │&nbsp;&nbsp;&nbsp;├─ <b>深色面性</b> <span class="mut">实底白字 · 红/蓝</span><br>
+   │&nbsp;&nbsp;&nbsp;├─ <b>浅色面性</b> <span class="mut">8%淡底同色字 · 红/蓝/金/灰/反白</span><br>
+   │&nbsp;&nbsp;&nbsp;└─ <b>涨跌标签</b>(特殊)<span class="mut">实底白字 · 涨红/跌绿/平灰 · 字号用法定死</span><br>
+   │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mut">↳ 三者自动布局一致(<b>H32 固定</b> · r6 · 内边距6 · hug)</span><br>
+   ├─ <b>个股标签</b><span class="pill later">以后</span><br>
+   └─ <span class="mut">其他(资讯热点 / 账号 / 卡片角标 / 权益 / 勋章)</span><span class="pill later">以后</span>
+  </div>
+ </div>
+
+ <div class="sech"><b>二、通用标签 · 三型渲染</b><span>真值精确</span></div>
+
+ <div class="card">
+  <p class="h">① 深色面性 <span style="font-weight:400;color:var(--CT4);font-size:12px">实底白字</span></p>
+  <p class="hsub">信息权重高/需非常突出时用;用于 feed 流卡片「组合 / 观点」</p>
+  <div class="tagrow">
+   <span class="tag" style="background:var(--R6);color:var(--CT6)">组合</span>
+   <span class="tag" style="background:var(--B6);color:var(--CT6)">观点</span>
+  </div>
+  <p class="cap">红 <span class="tok">--cp0 #F93838</span>(主色,优先)/ 蓝 <span class="tok">--cf3 #2B73FF</span>(功能色)实底 · 白字 <span class="tok">--ct6</span> · PingFang Regular 20/30 · 内边距6 · r6 · H32</p>
+ </div>
+
+ <div class="card">
+  <p class="h">② 浅色面性 <span style="font-weight:400;color:var(--CT4);font-size:12px">8%淡底 + 同色字</span></p>
+  <p class="hsub">一般信息权重;适用各产品模块</p>
+  <div class="tagrow">
+   <span class="tag" style="background:var(--CB13);color:var(--R6)">周期价值</span>
+   <span class="tag" style="background:var(--CB14);color:var(--B6)">周期价值</span>
+   <span class="tag" style="background:rgba(195,110,32,.08);color:var(--J6)">辰哥论市</span>
+   <span class="tag" style="background:var(--CB2);color:var(--CT4)">周期价值</span>
+   <span class="tag" style="background:rgba(255,255,255,.6);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.2);color:var(--CT3)">更新中</span>
+  </div>
+  <table style="margin-top:var(--SP3)">
+   <tr><th>色</th><th>底色</th><th>字色</th><th>定位 / 用途</th></tr>
+   <tr><td><b class="star">红 ★主色</b></td><td>红8% <span class="tok">rgba(249,56,56,.08)</span></td><td><span class="tok">--cp0 #F93838</span></td><td><b>品牌主色 · 选色首选</b></td></tr>
+   <tr><td><b>蓝</b></td><td>蓝8% <span class="tok">rgba(43,115,255,.08)</span></td><td><span class="tok">--cf3 #2B73FF</span></td><td>功能色(非主色)· 功能/链接语义</td></tr>
+   <tr><td><b>金</b></td><td>金8% <span class="tok">rgba(195,110,32,.08)</span></td><td><span class="tok">j6 #C36E20</span></td><td><b>营销性质</b></td></tr>
+   <tr><td><b>灰</b></td><td><span class="tok">--cb3 #F2F4F8</span></td><td><span class="tok">--ct4 #87878D</span></td><td>弱化 / 中性</td></tr>
+   <tr><td><b>反白</b></td><td>白60% + blur4 + 白边20%</td><td><span class="tok">--ct3 #55555E</span></td><td>图片 / 深底之上</td></tr>
+  </table>
+ </div>
+
+ <div class="card">
+  <p class="h">③ 涨跌标签(特殊) <span style="font-weight:400;color:var(--CT4);font-size:12px">字号 + 用法定死</span></p>
+  <p class="hsub">用于市场/全球地图/指数;涨红跌绿平灰</p>
+  <div class="tagrow">
+   <span class="tagq" style="background:var(--R6)">+0.01%</span>
+   <span class="tagq" style="background:var(--G6)">-0.27%</span>
+   <span class="tagq" style="background:var(--H8)">+0.00%</span>
+  </div>
+  <p class="cap"><b>定死</b>:字体 <span class="tok">GJType Medium 24/36</span>(GJ 数字字体)· 白字 · 内边距 px6 · r6 · <b>容器 H32 固定(24/36 垂直居中)</b> · 涨 <span class="tok">cs1 #F93838</span> / 跌 <span class="tok">cs2 #05B063</span> / 平 <span class="tok">cs3 #55555E</span><br><span style="color:var(--G6)">✓ 参考节点 19594:3374 已是 GJType Medium 24/36 · <b>涨跌幅符号(数字 / +- / %)统一 GJ 数字字体</b>;若基础涨跌组件仍为 D-DIN,同步时一并改</span></p>
+ </div>
+
+ <div class="sech"><b>三、使用规则</b><span>已纠正</span></div>
+ <div class="card"><ul style="margin:var(--SP0);padding-left:var(--SP5);font-size:12.5px;line-height:1.95;color:var(--ct3)">
+  <li><b>面性优先级 = 看信息权重</b>:需要<b>非常突出</b>的标签 → 用深色面性;一般权重 → 浅色面性(不是按场景默认深色)</li>
+  <li><b>选色优先红色</b>:红 = 品牌主色,选色首选;<b>蓝是功能色、非主色</b>,仅用于功能/链接语义</li>
+  <li><b>金色</b>:仅用于<b>营销性质</b>标签</li>
+  <li>灰 / 反白:弱化、图片或深底之上等特殊场景</li>
+  <li><b>涨跌</b>:<b>涨跌幅符号统一 GJ 数字字体(GJType Medium 24/36)</b>+ 用法<b>定死</b>,不可改;涨红 / 跌绿 / 平灰</li>
+  <li><b>自动布局</b>:三型统一 <b>H32 固定</b> · r6 · 内边距6 · hug 内容</li>
+ </ul></div>
+
+ <div class="sech"><b>四、下一步</b><span>待你确认</span></div>
+ <div class="card cap" style="font-size:12.5px">
+  确认这版「通用标签」(结构 + 三型真值 + 规则)无误后:<br>
+  ① 写进 skill(C13 标签 · 先收通用标签,个股/其余登记占位)<br>
+  ② 同步回 Figma:<b>边距 8→6 · 三型自动布局统一 · 涨跌幅符号统一 GJType</b>(写 Figma 前我再单独确认)<br>
+  ③ 个股标签等下一轮直读
+ </div>
+</div></body></html>

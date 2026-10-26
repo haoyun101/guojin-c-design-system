@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>单复选框 · 参考实现(设计系统 v3.5.0)</title>
+<style>
+  :root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+
+    --CL3:#F93838;   /* 单选 未选描边 */
+    --CP0:#F93838;   /* 复选 未选描边 + 选中填充(两子型) */
+    --CF1:#F93838;   /* 列表勾选 */
+    --CT6:#FFFFFF;   /* 白色勾选图标 */
+    --CB3:#F2F4F8;   /* 常规不可点击底 */
+    --H9:#0F0F1B;--H7:#87878D;--H2:#F2F4F8;
+  }
+  *{box-sizing:border-box;margin:var(--SP0);padding:var(--SP0);}
+  body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:var(--H2);color:var(--H9);padding:var(--SP6);max-width:760px;margin:var(--SP0) auto;line-height:1.6;}
+  h1{font-size:22px;margin-bottom:var(--SP1);}
+  .sub{font-size:13px;color:var(--H7);margin-bottom:var(--SP5);line-height:1.7;}
+  h2{font-size:16px;margin:var(--SP6) var(--SP0) var(--SP3);padding-left:var(--SP3);border-left:6px solid var(--CP0);}
+  .card{background:var(--CB1);border:1px solid var(--H3);border-radius:var(--RD3);padding:var(--SP6);margin-bottom:var(--SP4);}
+  .row{display:flex;align-items:center;gap:var(--SP7);flex-wrap:wrap;}
+  .cell{display:flex;flex-direction:column;align-items:center;gap:var(--SP2);}
+  .cap{font-size:12px;color:var(--H7);}
+  .hint{font-size:12px;color:var(--H7);margin-top:var(--SP3);}
+
+  /* 常规单选 / 复选:32×32(放大到 36 便于查看);状态由 .box 类驱动 */
+  .box{width:36px;height:36px;cursor:pointer;background:transparent;position:relative;flex:0 0 auto;
+       display:flex;align-items:center;justify-content:center;}
+  .radio{border-radius:50%;border:1.5px solid var(--CL3);}      /* 单选未选描边 CL3 */
+  .check{border-radius:var(--RD1);border:1.5px solid var(--CP0);}    /* 复选未选描边 CP0、圆角 4px */
+  .box svg{display:none;}
+  .box.on{border-color:transparent;background:var(--CP0);}      /* 选中填充 CP0 */
+  .box.on svg{display:block;}
+  .box.disabled{cursor:not-allowed;}
+  .radio.disabled.off{border-color:var(--CN11);background:var(--CB3);}
+  .check.disabled.off{border-color:var(--CN11);background:var(--CB3);}
+  .box.disabled.on{opacity:.30;}
+
+  /* 列表勾选:40×40 红勾 */
+  .listtick{width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .listtick svg{display:none;}
+  .listtick.on svg{display:block;}
+  .listrow{display:flex;align-items:center;justify-content:space-between;width:320px;
+    padding:var(--SP3) var(--SP4);border:1px solid var(--CL2);border-radius:var(--RD2);}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB1:#FFFFFF;--CL2:#EEEEEE;--H3:#E2E8F2;}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CN11:rgba(249,56,56,0.3);}
+</style>
+</head>
+<body>
+  <h1>单复选框 · 参考实现 v3.5.0</h1>
+  <div class="sub">来源:佣金宝组件库 V2.0(节点 3596:77707,🚧二期迭代;变量绑定与国金证券 DS 同套)· 通用组件层 · 命名 单复选框-{常规单选 | 常规复选 | 列表勾选}-{状态}。本期三子型;按钮形式单选(是/否)入二期。单选未选描边 CL3、复选未选描边 CP0(均 #F93838,语义分别记);选中填充 CP0 + 白勾 CT6;复选圆角 4px;不可点击 描边30%+底 CB3 / 选中 opacity30%。</div>
+
+  <h2>a. 常规单选(32×32 圆 · 选中白勾)</h2>
+  <div class="card">
+    <div class="row">
+      <div class="cell"><div class="box radio off" data-toggle><svg width="23" height="23" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l4.5 4.5L17 4.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cap">未选中(可点击)</div></div>
+      <div class="cell"><div class="box radio on" data-toggle><svg width="23" height="23" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l4.5 4.5L17 4.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cap">选中(可点击)</div></div>
+      <div class="cell"><div class="box radio off disabled"><svg width="23" height="23" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l4.5 4.5L17 4.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cap">未选中·不可点击</div></div>
+      <div class="cell"><div class="box radio on disabled"><svg width="23" height="23" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l4.5 4.5L17 4.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cap">选中·不可点击</div></div>
+    </div>
+    <div class="hint">未选=1.5px 内描边 CL3;选中=填充 CP0 + 白勾 CT6;未选禁用=描边30%+底 CB3;选中禁用=整体 opacity 30%。前两个可点选切换。</div>
+  </div>
+
+  <h2>b. 常规复选(32×32 圆角矩形 radius 4px · 未选描边 CP0)</h2>
+  <div class="card">
+    <div class="row">
+      <div class="cell"><div class="box check off" data-toggle><svg width="23" height="23" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l4.5 4.5L17 4.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cap">未选中(可点击)</div></div>
+      <div class="cell"><div class="box check on" data-toggle><svg width="23" height="23" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l4.5 4.5L17 4.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cap">选中(可点击)</div></div>
+      <div class="cell"><div class="box check off disabled"><svg width="23" height="23" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l4.5 4.5L17 4.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cap">未选中·不可点击</div></div>
+      <div class="cell"><div class="box check on disabled"><svg width="23" height="23" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l4.5 4.5L17 4.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cap">选中·不可点击</div></div>
+    </div>
+    <div class="hint">未选描边绑 CP0(与单选 CL3 不同,均 #F93838);圆角 4px。不可点击两态沿用单选规则(经裁决)。源属二期迭代,Design 终稿后回填核对。</div>
+  </div>
+
+  <h2>c. 列表勾选(40×40 · 列表右侧居中 · 红勾=已选/无勾=未选)</h2>
+  <div class="card">
+    <div class="listrow">
+      <span style="font-size:15px;">列表项文案</span>
+      <div class="listtick on" data-listtoggle><svg width="28" height="28" viewBox="0 0 20 20" fill="none"><path d="M3 10.5l4.5 4.5L17 4.5" stroke="#F93838" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="hint">点击切换 红勾(已选) / 无勾(未选)。状态为先记口径,待 Design 补全。</div>
+  </div>
+
+  <script>
+    document.querySelectorAll('[data-toggle]').forEach(function(b){
+      b.addEventListener('click',function(){ b.classList.toggle('on'); b.classList.toggle('off'); });
+    });
+    document.querySelectorAll('[data-listtoggle]').forEach(function(b){
+      b.addEventListener('click',function(){ b.classList.toggle('on'); });
+    });
+  </script>
+</body>
+</html>

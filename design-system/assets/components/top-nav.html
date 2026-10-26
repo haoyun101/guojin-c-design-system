@@ -1,0 +1,472 @@
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CL1:#DDDDDD;--CL2:#EEEEEE;--CT4:#87878D;}
+</style>
+<!-- 通用顶部导航栏组件 top-nav(参考实现 · 对应 components.md 三-1「导航栏-顶部」)
+     这是【规则集而非固定样式】:按场景取档。整体高 176 = 状态栏 88 + 操作栏 88。
+     操作栏通则:width:100% 自适应、flex 两端对齐(左组靠左/右组靠右/中间留白)、左右安全区 24、图标 48×48、元素间距 32、背景 --CB1、主文本 --CT1。
+     状态栏统一复用 status-bar 组件(信号+5G+电池);操作图标用 iconfont。
+     本文件演示 6 个通用场景变体(一级拆 自选/交易/理财 三档)(单一场景专属档如首页/AI在业务场景层):
+       ① 一级·自选/交易/理财:左=小宝(72×76 渐变,padding-left 96)+频道tab(选中44 Medium/未选36 Regular);右=消息+搜索。操作栏 padding 2/24/2/20。
+       ② 一级·我的:左=侧边栏48;右=扫一扫+消息+设置48。padding 20/24。无 tab。
+       ③ 二级·常规:左=返回48;中=标题36 Medium 绝对居中;右=分享48+操作文字28 Regular(可配置,默认"其他")。padding 20/24。
+       ④ 二级·tab切换:左=返回48;中=标题1(选中36 Medium)+标题2(未选32 Regular)间距60;右=刷新48。padding 20/24。
+     场景/图标/标题/默认选中均为参数;实际项目按场景取一档填业务内容。
+     【v3.13.0-draft·6变体】skill值+skill字符图标;结构按Design拆6变体;已自包含(内嵌 :root token 子集 + base64 iconfont),双击/单独打开即正常,不再依赖宿主注入。-->
+<style>
+/* ===== 自包含前导(v3.13.0-draft 支线草案):内嵌 token 子集 + base64 iconfont,使本文件双击/脱离管线也能完整渲染 ===== */
+:root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+--CT1:#0F0F1B;--CT3:#55555E;--CB1:#FFFFFF}
+@font-face{font-family:"iconfont";src:url("data:font/woff2;base64,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") format("woff2");font-display:block}
+.iconfont{font-family:"iconfont"!important;font-style:normal;-webkit-font-smoothing:antialiased}
+.icon-cebianlan:before{content:"\e63d"}
+.icon-saoyisao:before{content:"\e630"}
+.icon-xiaoxi:before{content:"\e61e"}
+.icon-shezhi:before{content:"\e639"}
+.icon-shixinjiantou-zuo:before{content:"\e62f"}
+.icon-tuichu:before{content:"\e616"}
+.icon-fenxiang:before{content:"\e620"}
+.icon-sousuo:before{content:"\e626"}
+.icon-huanyihuan:before{content:"\e637"}
+.gj-statusbar{display:flex;justify-content:space-between;align-items:center;height:88px;padding:var(--SP0) var(--SP8);color:var(--CT1)}
+.gj-sb-time{font-size:30px;font-weight:600;letter-spacing:1px}
+.gj-sb-right{display:inline-flex;align-items:center;gap:var(--SP3)}
+.gj-sb-5g{font-size:28px;font-weight:600}
+.gj-sb-signal rect,.gj-sb-battery rect{fill:currentColor}
+.gj-sb-battery rect[fill="none"]{fill:none;stroke:currentColor}
+
+/* ===== 顶部导航栏 top-nav(规则集:按场景取档;整体高176=状态栏88+操作栏88)===== */
+.gj-tnav{width:100%;background:var(--CB1,#fff);box-sizing:border-box}
+/* 操作栏:88 高、width100% 自适应、两端对齐(左组靠左/右组靠右/中间留白)、左右安全区24、元素间距32 */
+.gj-tnav-bar{position:relative;display:flex;align-items:center;justify-content:space-between;height:88px;padding:var(--SP5) var(--SP6);box-sizing:border-box}
+.gj-tnav-left{display:flex;align-items:flex-end;gap:var(--SP6);min-width:0}
+.gj-tnav-right{display:flex;align-items:center;gap:var(--SP7);flex-shrink:0}
+.gj-tnav-right .iconfont,.gj-tnav-left .iconfont{font-size:48px;line-height:1;color:var(--CT1,#0F0F1B)}
+/* 小宝(非标容器 72×76 渐变球,走 SVG) */
+.gj-tnav-bao{width:72px;height:76px;flex-shrink:0;display:block}
+.gj-tnav-bao svg{width:72px;height:76px;display:block}
+/* 导航栏频道 tab:选中44 Medium / 未选36 Regular(独立字号体系,非内容区 tab) */
+.gj-tnav-tabs{display:flex;align-items:flex-end;gap:var(--SP7)}
+.gj-tnav-tab{cursor:pointer;white-space:nowrap;color:var(--CT1,#0F0F1B);font-size:36px;font-weight:400;line-height:54px;padding:var(--SP1) var(--SP0);user-select:none}
+.gj-tnav-tab.is-on{color:var(--CT1,#0F0F1B);font-size:44px;font-weight:500;line-height:66px;padding:var(--SP0)}
+/* 二级:标题绝对居中 */
+.gj-tnav-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:flex-end;gap:var(--SP9)}
+.gj-tnav-title{font-size:36px;font-weight:500;color:var(--CT1,#0F0F1B);white-space:nowrap;line-height:1.05}
+.gj-tnav-title2{font-size:32px;font-weight:400;color:var(--CT3,#55555E);line-height:1.05}
+/* 二级:右侧操作文字 28 Regular CT1 */
+.gj-tnav-op{font-size:28px;font-weight:400;color:var(--CT1,#0F0F1B);white-space:nowrap}
+
+
+.gj-tnav-demo{margin:var(--SP0) var(--SP0) var(--SP7)}
+.gj-tnav-demolab{display:inline-block;font:600 11px/1 ui-monospace,Menlo,monospace;color:var(--CT4);border:1px solid var(--CL1);border-radius:var(--RD1);padding:var(--SP1) var(--SP2);margin:var(--SP0) var(--SP0) var(--SP2)}
+.gj-tnav-card{border:1px solid var(--CL2);border-radius:var(--RD6);overflow:hidden}
+</style>
+<div class="gj-tnav-demo"><span class="gj-tnav-demolab">① 一级 · 自选</span><div class="gj-tnav-card">
+<!-- ① 一级 · 自选(频道 tab:选中44/未选36;右=消息+搜索) -->
+<div class="gj-tnav">
+  <div class="gj-statusbar">
+  <span class="gj-sb-time">9:25</span>
+  <span class="gj-sb-right">
+    <svg width="40" height="26" viewBox="0 0 22 14" fill="none" class="gj-sb-signal">
+      <rect x="0" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="6" y="6" width="3.5" height="8" rx="1"/>
+      <rect x="12" y="3" width="3.5" height="11" rx="1"/><rect x="18" y="0" width="3.5" height="14" rx="1"/></svg>
+    <span class="gj-sb-5g">5G</span>
+    <svg width="56" height="26" viewBox="0 0 28 13" fill="none" class="gj-sb-battery">
+      <rect x="0.5" y="0.8" width="24" height="11.5" rx="3" stroke-width="1" fill="none" opacity="0.4"/>
+      <rect x="2.3" y="2.6" width="19.5" height="7.9" rx="1.6"/>
+      <rect x="25.8" y="4" width="1.8" height="5" rx="0.9" opacity="0.4"/></svg>
+  </span>
+</div>
+  <div class="gj-tnav-bar " style="padding:2px var(--SP6) 2px var(--SP5)">
+    <div class="gj-tnav-left">
+      <span class="gj-tnav-bao"><svg width="180" height="182" viewBox="0 0 180 182" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_18976_155" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="176" height="176">
+<path d="M168.442 51.5205C177.412 69.8086 179.712 90.6563 174.942 110.46C170.172 130.263 158.633 147.778 142.319 159.976C126.006 172.174 105.943 178.289 85.5988 177.264C65.2548 176.239 45.9083 168.138 30.9036 154.362C15.8988 140.585 6.17892 121.999 3.42403 101.817C0.669148 81.6341 5.05243 61.1231 15.8162 43.8295C26.5799 26.5358 43.0476 13.5463 62.3726 7.10639C81.6977 0.666487 102.665 1.18092 121.651 8.56075L117.267 19.8412C112.191 32.8992 97.0291 38.6447 83.1517 40.566C80.1338 40.9838 77.1433 41.6796 74.2186 42.6542C63.1809 46.3324 53.7751 53.7515 47.6273 63.629C41.4794 73.5065 38.9759 85.2216 40.5494 96.7492C42.1228 108.277 47.6745 118.892 56.2446 126.761C64.8148 134.629 75.8648 139.256 87.4845 139.842C99.1043 140.427 110.563 136.935 119.881 129.968C129.199 123.001 135.79 112.997 138.514 101.686C139.236 98.6887 139.674 95.6498 139.833 92.6073C140.565 78.6166 144.998 63.0202 157.576 56.8504L168.442 51.5205Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_18976_155)">
+<g filter="url(#filter0_f_18976_155)">
+<circle cx="89.999" cy="90.0001" r="90" transform="rotate(90 89.999 90.0001)" fill="url(#paint0_linear_18976_155)"/>
+</g>
+</g>
+<g filter="url(#filter1_dii_18976_155)">
+<rect x="37.7992" y="37.8" width="104.4" height="104.396" rx="39" fill="white"/>
+</g>
+<path d="M72.5981 78.3677C75.8012 78.3677 78.3986 80.9644 78.3988 84.1675V95.814C78.3988 99.0172 75.8013 101.614 72.5981 101.614C69.395 101.614 66.7983 99.017 66.7982 95.814V84.1675C66.7985 80.9646 69.3951 78.3679 72.5981 78.3677ZM107.399 78.3677C110.602 78.3677 113.199 80.9644 113.2 84.1675V95.814C113.2 99.0172 110.602 101.614 107.399 101.614C104.196 101.614 101.599 99.017 101.599 95.814V84.1675C101.599 80.9646 104.196 78.3679 107.399 78.3677Z" fill="url(#paint1_linear_18976_155)"/>
+<g filter="url(#filter2_d_18976_155)">
+<circle cx="138.749" cy="36.7496" r="20.25" fill="url(#paint2_radial_18976_155)"/>
+</g>
+<defs>
+<filter id="filter0_f_18976_155" x="-16.5527" y="-16.5516" width="213.103" height="213.103" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="8.27586" result="effect1_foregroundBlur_18976_155"/>
+</filter>
+<filter id="filter1_dii_18976_155" x="24.7992" y="31.275" width="130.4" height="149.921" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="13" operator="erode" in="SourceAlpha" result="effect1_dropShadow_18976_155"/>
+<feOffset dy="26"/>
+<feGaussianBlur stdDeviation="13"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.570573 0 0 0 0 0.713712 0 0 0 0 1 0 0 0 1 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_18976_155"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_18976_155" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="6.525" operator="dilate" in="SourceAlpha" result="effect2_innerShadow_18976_155"/>
+<feOffset dx="-6.525" dy="-6.525"/>
+<feGaussianBlur stdDeviation="13.05"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.3825 0 0 0 0 0.520289 0 0 0 0 0.85 0 0 0 0.8 0"/>
+<feBlend mode="normal" in2="shape" result="effect2_innerShadow_18976_155"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="-3.2625" dy="6.525"/>
+<feGaussianBlur stdDeviation="3.2625"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.8 0"/>
+<feBlend mode="normal" in2="effect2_innerShadow_18976_155" result="effect3_innerShadow_18976_155"/>
+</filter>
+<filter id="filter2_d_18976_155" x="106.475" y="16.4996" width="64.5469" height="71.5078" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="6.32813" operator="erode" in="SourceAlpha" result="effect1_dropShadow_18976_155"/>
+<feOffset dy="18.9844"/>
+<feGaussianBlur stdDeviation="9.17578"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+<feBlend mode="multiply" in2="BackgroundImageFix" result="effect1_dropShadow_18976_155"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_18976_155" result="shape"/>
+</filter>
+<linearGradient id="paint0_linear_18976_155" x1="149.65" y1="41.8585" x2="76.5508" y2="172.239" gradientUnits="userSpaceOnUse">
+<stop stop-color="#B3A0FF"/>
+<stop offset="0.349009" stop-color="#FFDFFC"/>
+<stop offset="0.645505" stop-color="#C7E5FF"/>
+<stop offset="1" stop-color="#7CB5FF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_18976_155" x1="107.4" y1="78.3668" x2="107.4" y2="101.612" gradientUnits="userSpaceOnUse">
+<stop stop-color="#7B879F"/>
+<stop offset="1" stop-color="#08204E"/>
+</linearGradient>
+<radialGradient id="paint2_radial_18976_155" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(134.699 28.6496) rotate(52.3164) scale(24.9179)">
+<stop stop-color="#FFF8F0"/>
+<stop offset="1" stop-color="#FFBE85"/>
+</radialGradient>
+</defs>
+</svg></span>
+      <div class="gj-tnav-tabs" data-tabgroup="v1">
+        <span class="gj-tnav-tab is-on">自选</span>
+        <span class="gj-tnav-tab">市场</span>
+        <span class="gj-tnav-tab">国金指数</span>
+      </div>
+    </div>
+    <div class="gj-tnav-right">
+      <i class="iconfont icon-xiaoxi"></i>
+      <i class="iconfont icon-sousuo"></i>
+    </div>
+  </div>
+</div></div></div><div class="gj-tnav-demo"><span class="gj-tnav-demolab">② 一级 · 交易</span><div class="gj-tnav-card">
+<!-- ② 一级 · 交易(频道 tab:选中44/未选36;右=消息+搜索) -->
+<div class="gj-tnav">
+  <div class="gj-statusbar">
+  <span class="gj-sb-time">9:25</span>
+  <span class="gj-sb-right">
+    <svg width="40" height="26" viewBox="0 0 22 14" fill="none" class="gj-sb-signal">
+      <rect x="0" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="6" y="6" width="3.5" height="8" rx="1"/>
+      <rect x="12" y="3" width="3.5" height="11" rx="1"/><rect x="18" y="0" width="3.5" height="14" rx="1"/></svg>
+    <span class="gj-sb-5g">5G</span>
+    <svg width="56" height="26" viewBox="0 0 28 13" fill="none" class="gj-sb-battery">
+      <rect x="0.5" y="0.8" width="24" height="11.5" rx="3" stroke-width="1" fill="none" opacity="0.4"/>
+      <rect x="2.3" y="2.6" width="19.5" height="7.9" rx="1.6"/>
+      <rect x="25.8" y="4" width="1.8" height="5" rx="0.9" opacity="0.4"/></svg>
+  </span>
+</div>
+  <div class="gj-tnav-bar " style="padding:2px var(--SP6) 2px var(--SP5)">
+    <div class="gj-tnav-left">
+      <span class="gj-tnav-bao"><svg width="180" height="182" viewBox="0 0 180 182" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_18976_155" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="176" height="176">
+<path d="M168.442 51.5205C177.412 69.8086 179.712 90.6563 174.942 110.46C170.172 130.263 158.633 147.778 142.319 159.976C126.006 172.174 105.943 178.289 85.5988 177.264C65.2548 176.239 45.9083 168.138 30.9036 154.362C15.8988 140.585 6.17892 121.999 3.42403 101.817C0.669148 81.6341 5.05243 61.1231 15.8162 43.8295C26.5799 26.5358 43.0476 13.5463 62.3726 7.10639C81.6977 0.666487 102.665 1.18092 121.651 8.56075L117.267 19.8412C112.191 32.8992 97.0291 38.6447 83.1517 40.566C80.1338 40.9838 77.1433 41.6796 74.2186 42.6542C63.1809 46.3324 53.7751 53.7515 47.6273 63.629C41.4794 73.5065 38.9759 85.2216 40.5494 96.7492C42.1228 108.277 47.6745 118.892 56.2446 126.761C64.8148 134.629 75.8648 139.256 87.4845 139.842C99.1043 140.427 110.563 136.935 119.881 129.968C129.199 123.001 135.79 112.997 138.514 101.686C139.236 98.6887 139.674 95.6498 139.833 92.6073C140.565 78.6166 144.998 63.0202 157.576 56.8504L168.442 51.5205Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_18976_155)">
+<g filter="url(#filter0_f_18976_155)">
+<circle cx="89.999" cy="90.0001" r="90" transform="rotate(90 89.999 90.0001)" fill="url(#paint0_linear_18976_155)"/>
+</g>
+</g>
+<g filter="url(#filter1_dii_18976_155)">
+<rect x="37.7992" y="37.8" width="104.4" height="104.396" rx="39" fill="white"/>
+</g>
+<path d="M72.5981 78.3677C75.8012 78.3677 78.3986 80.9644 78.3988 84.1675V95.814C78.3988 99.0172 75.8013 101.614 72.5981 101.614C69.395 101.614 66.7983 99.017 66.7982 95.814V84.1675C66.7985 80.9646 69.3951 78.3679 72.5981 78.3677ZM107.399 78.3677C110.602 78.3677 113.199 80.9644 113.2 84.1675V95.814C113.2 99.0172 110.602 101.614 107.399 101.614C104.196 101.614 101.599 99.017 101.599 95.814V84.1675C101.599 80.9646 104.196 78.3679 107.399 78.3677Z" fill="url(#paint1_linear_18976_155)"/>
+<g filter="url(#filter2_d_18976_155)">
+<circle cx="138.749" cy="36.7496" r="20.25" fill="url(#paint2_radial_18976_155)"/>
+</g>
+<defs>
+<filter id="filter0_f_18976_155" x="-16.5527" y="-16.5516" width="213.103" height="213.103" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="8.27586" result="effect1_foregroundBlur_18976_155"/>
+</filter>
+<filter id="filter1_dii_18976_155" x="24.7992" y="31.275" width="130.4" height="149.921" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="13" operator="erode" in="SourceAlpha" result="effect1_dropShadow_18976_155"/>
+<feOffset dy="26"/>
+<feGaussianBlur stdDeviation="13"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.570573 0 0 0 0 0.713712 0 0 0 0 1 0 0 0 1 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_18976_155"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_18976_155" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="6.525" operator="dilate" in="SourceAlpha" result="effect2_innerShadow_18976_155"/>
+<feOffset dx="-6.525" dy="-6.525"/>
+<feGaussianBlur stdDeviation="13.05"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.3825 0 0 0 0 0.520289 0 0 0 0 0.85 0 0 0 0.8 0"/>
+<feBlend mode="normal" in2="shape" result="effect2_innerShadow_18976_155"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="-3.2625" dy="6.525"/>
+<feGaussianBlur stdDeviation="3.2625"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.8 0"/>
+<feBlend mode="normal" in2="effect2_innerShadow_18976_155" result="effect3_innerShadow_18976_155"/>
+</filter>
+<filter id="filter2_d_18976_155" x="106.475" y="16.4996" width="64.5469" height="71.5078" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="6.32813" operator="erode" in="SourceAlpha" result="effect1_dropShadow_18976_155"/>
+<feOffset dy="18.9844"/>
+<feGaussianBlur stdDeviation="9.17578"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+<feBlend mode="multiply" in2="BackgroundImageFix" result="effect1_dropShadow_18976_155"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_18976_155" result="shape"/>
+</filter>
+<linearGradient id="paint0_linear_18976_155" x1="149.65" y1="41.8585" x2="76.5508" y2="172.239" gradientUnits="userSpaceOnUse">
+<stop stop-color="#B3A0FF"/>
+<stop offset="0.349009" stop-color="#FFDFFC"/>
+<stop offset="0.645505" stop-color="#C7E5FF"/>
+<stop offset="1" stop-color="#7CB5FF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_18976_155" x1="107.4" y1="78.3668" x2="107.4" y2="101.612" gradientUnits="userSpaceOnUse">
+<stop stop-color="#7B879F"/>
+<stop offset="1" stop-color="#08204E"/>
+</linearGradient>
+<radialGradient id="paint2_radial_18976_155" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(134.699 28.6496) rotate(52.3164) scale(24.9179)">
+<stop stop-color="#FFF8F0"/>
+<stop offset="1" stop-color="#FFBE85"/>
+</radialGradient>
+</defs>
+</svg></span>
+      <div class="gj-tnav-tabs" data-tabgroup="v-trade">
+        <span class="gj-tnav-tab is-on">普通</span>
+        <span class="gj-tnav-tab">信用</span>
+        <span class="gj-tnav-tab">期权</span>
+      </div>
+    </div>
+    <div class="gj-tnav-right">
+      <i class="iconfont icon-xiaoxi"></i>
+      <i class="iconfont icon-sousuo"></i>
+    </div>
+  </div>
+</div></div></div><div class="gj-tnav-demo"><span class="gj-tnav-demolab">③ 一级 · 理财</span><div class="gj-tnav-card">
+<!-- ③ 一级 · 理财(频道 tab:选中44/未选36;右=消息+搜索) -->
+<div class="gj-tnav">
+  <div class="gj-statusbar">
+  <span class="gj-sb-time">9:25</span>
+  <span class="gj-sb-right">
+    <svg width="40" height="26" viewBox="0 0 22 14" fill="none" class="gj-sb-signal">
+      <rect x="0" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="6" y="6" width="3.5" height="8" rx="1"/>
+      <rect x="12" y="3" width="3.5" height="11" rx="1"/><rect x="18" y="0" width="3.5" height="14" rx="1"/></svg>
+    <span class="gj-sb-5g">5G</span>
+    <svg width="56" height="26" viewBox="0 0 28 13" fill="none" class="gj-sb-battery">
+      <rect x="0.5" y="0.8" width="24" height="11.5" rx="3" stroke-width="1" fill="none" opacity="0.4"/>
+      <rect x="2.3" y="2.6" width="19.5" height="7.9" rx="1.6"/>
+      <rect x="25.8" y="4" width="1.8" height="5" rx="0.9" opacity="0.4"/></svg>
+  </span>
+</div>
+  <div class="gj-tnav-bar " style="padding:2px var(--SP6) 2px var(--SP5)">
+    <div class="gj-tnav-left">
+      <span class="gj-tnav-bao"><svg width="180" height="182" viewBox="0 0 180 182" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_18976_155" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="176" height="176">
+<path d="M168.442 51.5205C177.412 69.8086 179.712 90.6563 174.942 110.46C170.172 130.263 158.633 147.778 142.319 159.976C126.006 172.174 105.943 178.289 85.5988 177.264C65.2548 176.239 45.9083 168.138 30.9036 154.362C15.8988 140.585 6.17892 121.999 3.42403 101.817C0.669148 81.6341 5.05243 61.1231 15.8162 43.8295C26.5799 26.5358 43.0476 13.5463 62.3726 7.10639C81.6977 0.666487 102.665 1.18092 121.651 8.56075L117.267 19.8412C112.191 32.8992 97.0291 38.6447 83.1517 40.566C80.1338 40.9838 77.1433 41.6796 74.2186 42.6542C63.1809 46.3324 53.7751 53.7515 47.6273 63.629C41.4794 73.5065 38.9759 85.2216 40.5494 96.7492C42.1228 108.277 47.6745 118.892 56.2446 126.761C64.8148 134.629 75.8648 139.256 87.4845 139.842C99.1043 140.427 110.563 136.935 119.881 129.968C129.199 123.001 135.79 112.997 138.514 101.686C139.236 98.6887 139.674 95.6498 139.833 92.6073C140.565 78.6166 144.998 63.0202 157.576 56.8504L168.442 51.5205Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_18976_155)">
+<g filter="url(#filter0_f_18976_155)">
+<circle cx="89.999" cy="90.0001" r="90" transform="rotate(90 89.999 90.0001)" fill="url(#paint0_linear_18976_155)"/>
+</g>
+</g>
+<g filter="url(#filter1_dii_18976_155)">
+<rect x="37.7992" y="37.8" width="104.4" height="104.396" rx="39" fill="white"/>
+</g>
+<path d="M72.5981 78.3677C75.8012 78.3677 78.3986 80.9644 78.3988 84.1675V95.814C78.3988 99.0172 75.8013 101.614 72.5981 101.614C69.395 101.614 66.7983 99.017 66.7982 95.814V84.1675C66.7985 80.9646 69.3951 78.3679 72.5981 78.3677ZM107.399 78.3677C110.602 78.3677 113.199 80.9644 113.2 84.1675V95.814C113.2 99.0172 110.602 101.614 107.399 101.614C104.196 101.614 101.599 99.017 101.599 95.814V84.1675C101.599 80.9646 104.196 78.3679 107.399 78.3677Z" fill="url(#paint1_linear_18976_155)"/>
+<g filter="url(#filter2_d_18976_155)">
+<circle cx="138.749" cy="36.7496" r="20.25" fill="url(#paint2_radial_18976_155)"/>
+</g>
+<defs>
+<filter id="filter0_f_18976_155" x="-16.5527" y="-16.5516" width="213.103" height="213.103" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="8.27586" result="effect1_foregroundBlur_18976_155"/>
+</filter>
+<filter id="filter1_dii_18976_155" x="24.7992" y="31.275" width="130.4" height="149.921" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="13" operator="erode" in="SourceAlpha" result="effect1_dropShadow_18976_155"/>
+<feOffset dy="26"/>
+<feGaussianBlur stdDeviation="13"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.570573 0 0 0 0 0.713712 0 0 0 0 1 0 0 0 1 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_18976_155"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_18976_155" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="6.525" operator="dilate" in="SourceAlpha" result="effect2_innerShadow_18976_155"/>
+<feOffset dx="-6.525" dy="-6.525"/>
+<feGaussianBlur stdDeviation="13.05"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.3825 0 0 0 0 0.520289 0 0 0 0 0.85 0 0 0 0.8 0"/>
+<feBlend mode="normal" in2="shape" result="effect2_innerShadow_18976_155"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="-3.2625" dy="6.525"/>
+<feGaussianBlur stdDeviation="3.2625"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.8 0"/>
+<feBlend mode="normal" in2="effect2_innerShadow_18976_155" result="effect3_innerShadow_18976_155"/>
+</filter>
+<filter id="filter2_d_18976_155" x="106.475" y="16.4996" width="64.5469" height="71.5078" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="6.32813" operator="erode" in="SourceAlpha" result="effect1_dropShadow_18976_155"/>
+<feOffset dy="18.9844"/>
+<feGaussianBlur stdDeviation="9.17578"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+<feBlend mode="multiply" in2="BackgroundImageFix" result="effect1_dropShadow_18976_155"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_18976_155" result="shape"/>
+</filter>
+<linearGradient id="paint0_linear_18976_155" x1="149.65" y1="41.8585" x2="76.5508" y2="172.239" gradientUnits="userSpaceOnUse">
+<stop stop-color="#B3A0FF"/>
+<stop offset="0.349009" stop-color="#FFDFFC"/>
+<stop offset="0.645505" stop-color="#C7E5FF"/>
+<stop offset="1" stop-color="#7CB5FF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_18976_155" x1="107.4" y1="78.3668" x2="107.4" y2="101.612" gradientUnits="userSpaceOnUse">
+<stop stop-color="#7B879F"/>
+<stop offset="1" stop-color="#08204E"/>
+</linearGradient>
+<radialGradient id="paint2_radial_18976_155" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(134.699 28.6496) rotate(52.3164) scale(24.9179)">
+<stop stop-color="#FFF8F0"/>
+<stop offset="1" stop-color="#FFBE85"/>
+</radialGradient>
+</defs>
+</svg></span>
+      <div class="gj-tnav-tabs" data-tabgroup="v-fin">
+        <span class="gj-tnav-tab is-on">理财</span>
+        <span class="gj-tnav-tab">基金投顾</span>
+        <span class="gj-tnav-tab">智慧投</span>
+      </div>
+    </div>
+    <div class="gj-tnav-right">
+      <i class="iconfont icon-xiaoxi"></i>
+      <i class="iconfont icon-sousuo"></i>
+    </div>
+  </div>
+</div></div></div><div class="gj-tnav-demo"><span class="gj-tnav-demolab">④ 一级 · 我的</span><div class="gj-tnav-card">
+<!-- ④ 一级 · 我的(左=侧边栏;右=扫一扫+消息+设置;无 tab) -->
+<div class="gj-tnav">
+  <div class="gj-statusbar">
+  <span class="gj-sb-time">9:25</span>
+  <span class="gj-sb-right">
+    <svg width="40" height="26" viewBox="0 0 22 14" fill="none" class="gj-sb-signal">
+      <rect x="0" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="6" y="6" width="3.5" height="8" rx="1"/>
+      <rect x="12" y="3" width="3.5" height="11" rx="1"/><rect x="18" y="0" width="3.5" height="14" rx="1"/></svg>
+    <span class="gj-sb-5g">5G</span>
+    <svg width="56" height="26" viewBox="0 0 28 13" fill="none" class="gj-sb-battery">
+      <rect x="0.5" y="0.8" width="24" height="11.5" rx="3" stroke-width="1" fill="none" opacity="0.4"/>
+      <rect x="2.3" y="2.6" width="19.5" height="7.9" rx="1.6"/>
+      <rect x="25.8" y="4" width="1.8" height="5" rx="0.9" opacity="0.4"/></svg>
+  </span>
+</div>
+  <div class="gj-tnav-bar ">
+    <div class="gj-tnav-left">
+      <i class="iconfont icon-cebianlan"></i>
+    </div>
+    <div class="gj-tnav-right">
+      <i class="iconfont icon-saoyisao"></i>
+      <i class="iconfont icon-xiaoxi"></i>
+      <i class="iconfont icon-shezhi"></i>
+    </div>
+  </div>
+</div></div></div><div class="gj-tnav-demo"><span class="gj-tnav-demolab">⑤ 二级 · 常规</span><div class="gj-tnav-card">
+<!-- ⑤ 二级 · 常规(左=返回;中=标题居中36;右=分享+操作文字28) -->
+<div class="gj-tnav">
+  <div class="gj-statusbar">
+  <span class="gj-sb-time">9:25</span>
+  <span class="gj-sb-right">
+    <svg width="40" height="26" viewBox="0 0 22 14" fill="none" class="gj-sb-signal">
+      <rect x="0" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="6" y="6" width="3.5" height="8" rx="1"/>
+      <rect x="12" y="3" width="3.5" height="11" rx="1"/><rect x="18" y="0" width="3.5" height="14" rx="1"/></svg>
+    <span class="gj-sb-5g">5G</span>
+    <svg width="56" height="26" viewBox="0 0 28 13" fill="none" class="gj-sb-battery">
+      <rect x="0.5" y="0.8" width="24" height="11.5" rx="3" stroke-width="1" fill="none" opacity="0.4"/>
+      <rect x="2.3" y="2.6" width="19.5" height="7.9" rx="1.6"/>
+      <rect x="25.8" y="4" width="1.8" height="5" rx="0.9" opacity="0.4"/></svg>
+  </span>
+</div>
+  <div class="gj-tnav-bar ">
+    <div class="gj-tnav-left">
+      <i class="iconfont icon-tuichu"></i>
+    </div>
+    <div class="gj-tnav-center"><span class="gj-tnav-title">详情</span></div>
+    <div class="gj-tnav-right">
+      <i class="iconfont icon-fenxiang"></i>
+      <span class="gj-tnav-op">其他</span>
+    </div>
+  </div>
+</div></div></div><div class="gj-tnav-demo"><span class="gj-tnav-demolab">⑥ 二级 · tab 切换</span><div class="gj-tnav-card">
+<!-- ⑥ 二级 · tab 切换(中=标题1选中36+标题2未选32,间距60;右=刷新) -->
+<div class="gj-tnav">
+  <div class="gj-statusbar">
+  <span class="gj-sb-time">9:25</span>
+  <span class="gj-sb-right">
+    <svg width="40" height="26" viewBox="0 0 22 14" fill="none" class="gj-sb-signal">
+      <rect x="0" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="6" y="6" width="3.5" height="8" rx="1"/>
+      <rect x="12" y="3" width="3.5" height="11" rx="1"/><rect x="18" y="0" width="3.5" height="14" rx="1"/></svg>
+    <span class="gj-sb-5g">5G</span>
+    <svg width="56" height="26" viewBox="0 0 28 13" fill="none" class="gj-sb-battery">
+      <rect x="0.5" y="0.8" width="24" height="11.5" rx="3" stroke-width="1" fill="none" opacity="0.4"/>
+      <rect x="2.3" y="2.6" width="19.5" height="7.9" rx="1.6"/>
+      <rect x="25.8" y="4" width="1.8" height="5" rx="0.9" opacity="0.4"/></svg>
+  </span>
+</div>
+  <div class="gj-tnav-bar ">
+    <div class="gj-tnav-left">
+      <i class="iconfont icon-tuichu"></i>
+    </div>
+    <div class="gj-tnav-center" data-tabgroup="v4">
+      <span class="gj-tnav-title">成交</span>
+      <span class="gj-tnav-title2">持仓</span>
+    </div>
+    <div class="gj-tnav-right">
+      <i class="iconfont icon-huanyihuan"></i>
+    </div>
+  </div>
+</div></div></div>
+<script>
+(function(){
+  document.querySelectorAll('.gj-tnav [data-tabgroup]').forEach(function(g){
+    var sel = g.classList.contains('gj-tnav-center') ? '.gj-tnav-title,.gj-tnav-title2' : '.gj-tnav-tab';
+    g.querySelectorAll(sel).forEach(function(t){
+      t.style.cursor='pointer';
+      t.addEventListener('click',function(){
+        if(g.classList.contains('gj-tnav-center')){
+          g.querySelectorAll('.gj-tnav-title,.gj-tnav-title2').forEach(function(x){x.className='gj-tnav-title2';});
+          t.className='gj-tnav-title';
+        }else{
+          g.querySelectorAll('.gj-tnav-tab').forEach(function(x){x.classList.remove('is-on');});
+          t.classList.add('is-on');
+        }
+      });
+    });
+  });
+})();
+</script>

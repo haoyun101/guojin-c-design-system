@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>通用列表表头 · 三变体预览 v2</title>
+<style>
+:root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+
+  --cb1:var(--H1);--ct4:var(--H7);--cp0:var(--R6);--gray:var(--H6);
+  --pf:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --line:#ECEEF2;
+}
+*{box-sizing:border-box}
+body{margin:var(--SP0);background:var(--CB2);font-family:var(--pf);color:var(--CT1);padding:var(--SP7) var(--SP5) var(--s-64)}
+.wrap{max-width:980px;margin:var(--SP0) auto}
+h1{font-size:20px;font-weight:680;margin:var(--SP0) var(--SP0) var(--SP1)}
+.sub{font-size:12.5px;color:var(--CT3);margin:var(--SP0) var(--SP0) var(--SP6)}
+.vlabel{font-size:12px;font-weight:700;color:var(--CT3);margin:var(--SP6) var(--SP0) var(--SP2);display:flex;gap:var(--SP2);align-items:center}
+.vlabel .tag{font-size:10px;font-weight:700;color:var(--CT6);background:var(--H9);border-radius:var(--RD1);padding:0 var(--SP2)}
+.vlabel .tag.use{background:var(--cp0)}
+.frame{width:750px;max-width:100%;background:var(--CB1);border:1px solid var(--line);border-radius:var(--RD3);overflow:hidden;box-shadow:0 4px 14px rgba(20,24,40,.05)}
+
+/* ===== 通用表头 H60 ===== */
+.hd{position:relative;height:60px;width:750px;background:var(--cb1);display:flex;align-items:stretch}
+/* 左格(三变体) */
+.lc{flex:none;display:flex;align-items:center;height:60px}
+.lc.icons{width:216px;padding-left:var(--SP6);gap:var(--SP7)}      /* 有图标:24/88/152 */
+.lc.text{width:216px;padding-left:var(--SP6)}                 /* 文字:名称代码 — 同名称区216 */
+.lc.empty{width:216px}                                  /* 无内容 — 同名称区216 */
+.lc .ic{width:32px;height:32px;flex:none;display:block}
+.lc .txt{font-weight:400;font-size:24px;line-height:36px;color:var(--ct4)}
+/* 右列(可横滑) */
+.cols{flex:1;display:flex;align-items:center;overflow-x:auto;min-width:0}
+.cols::-webkit-scrollbar{height:0}
+.col{flex:none;width:170px;height:60px;display:flex;align-items:center;justify-content:flex-end;gap:var(--SP1);cursor:pointer;user-select:none}
+.col .lb{font-weight:400;font-size:24px;line-height:36px;color:var(--ct4);white-space:nowrap}
+.col svg{flex:none}
+.col .t-up,.col .t-dn{fill:var(--gray);transition:fill .12s}
+.col.asc .t-up{fill:var(--cp0)} .col.desc .t-dn{fill:var(--cp0)}
+.col.asc .lb,.col.desc .lb{color:var(--cp0)}
+
+.note{font-size:11px;color:var(--CT4);margin:var(--SP2) 0 var(--SP0)}
+.spec{background:var(--CB1);border:1px solid var(--line);border-radius:var(--RD3);padding:var(--SP5) var(--SP5);margin-top:var(--SP6);font-size:13px;line-height:1.85;color:var(--H14)}
+.spec .k{display:inline-block;min-width:92px;color:var(--CT4)}.spec b{color:var(--H10)}
+.cols-list{font-size:12px;color:var(--CT3);background:var(--CB41);border-radius:var(--RD2);padding:var(--SP2) var(--SP3);margin-top:var(--SP2);line-height:1.7}
+</style><style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB1:#FFFFFF;--CT1:#0F0F1B;--CT6:#FFFFFF;--H1:#FFFFFF;--H6:#CCCCCC;--H7:#87878D;--H9:#0F0F1B;--R6:#F93838;}
+</style>
+<style>
+/* 本文件引用到的 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB2:#F2F4F8;--CB41:#F6F8FC;--CT3:#55555E;--CT4:#87878D;--H10:#000000;--H14:#373746;--s-64:64px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>通用列表表头 · 三变体预览 v2</h1>
+  <p class="sub">通用组件 · 列表表头(左侧 有图标 / 文字 / 无内容)。右侧排序列头右对齐、每 170 一列、无分割线、点击转红。列头图标用真实 SVG。</p>
+
+  <!-- 变体1:左侧有图标(自选用) -->
+  <div class="vlabel">变体 A · 左侧有图标 <span class="tag use">自选页用此变体</span></div>
+  <div class="frame">
+    <div class="hd">
+      <div class="lc icons">
+        <span class="ic" title="编辑"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M18.8887 2C19.441 2 19.8887 2.44772 19.8887 3C19.8887 3.55228 19.441 4 18.8887 4H6C4.89543 4 4 4.89543 4 6V26C4 27.1046 4.89543 28 6 28H26C27.1046 28 28 27.1046 28 26V13.1113C28 12.559 28.4477 12.1113 29 12.1113C29.5523 12.1113 30 12.559 30 13.1113V26C30 28.2091 28.2091 30 26 30H6C3.79086 30 2 28.2091 2 26V6C2 3.79086 3.79086 2 6 2H18.8887ZM26.8535 3.91016C27.2706 3.49018 27.9495 3.48884 28.3682 3.90723C28.7847 4.32377 28.7861 4.99889 28.3711 5.41699L17.6035 16.2656L15.6807 16.6758L16.0918 14.7529L26.8535 3.91016Z" fill="#87878D"/></svg></span>
+        <span class="ic" title="多股同列"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M12.5547 16.6055C14.1397 16.686 15.4004 17.9966 15.4004 19.6016V27.002L15.3965 27.1562C15.3186 28.69 14.0884 29.9202 12.5547 29.998L12.4004 30.002H5L4.8457 29.998C3.31178 29.9203 2.08181 28.6901 2.00391 27.1562L2 27.002V19.6016C2 17.9965 3.26056 16.6858 4.8457 16.6055L5 16.6016H12.4004L12.5547 16.6055ZM27.1543 16.6055C28.7393 16.686 30 17.9966 30 19.6016V27.002L29.9961 27.1562C29.9182 28.69 28.688 29.9202 27.1543 29.998L27 30.002H19.5996L19.4453 29.998C17.9114 29.9203 16.6814 28.6901 16.6035 27.1562L16.5996 27.002V19.6016C16.5996 17.9965 17.8602 16.6858 19.4453 16.6055L19.5996 16.6016H27L27.1543 16.6055ZM5 18.6016C4.44772 18.6016 4 19.0493 4 19.6016V27.002C4.00021 27.5541 4.44784 28.002 5 28.002H12.4004C12.9524 28.0017 13.4002 27.5539 13.4004 27.002V19.6016C13.4004 19.0494 12.9525 18.6018 12.4004 18.6016H5ZM19.5996 18.6016C19.0473 18.6016 18.5996 19.0493 18.5996 19.6016V27.002C18.5998 27.5541 19.0475 28.002 19.5996 28.002H27C27.552 28.0017 27.9998 27.5539 28 27.002V19.6016C28 19.0494 27.5521 18.6018 27 18.6016H19.5996ZM12.5547 2.00391C14.1397 2.08441 15.4004 3.39503 15.4004 5V12.4004L15.3965 12.5547C15.3186 14.0884 14.0884 15.3186 12.5547 15.3965L12.4004 15.4004H5L4.8457 15.3965C3.31178 15.3188 2.08181 14.0886 2.00391 12.5547L2 12.4004V5C2 3.3949 3.26056 2.08421 4.8457 2.00391L5 2H12.4004L12.5547 2.00391ZM27.1543 2.00391C28.7393 2.08441 30 3.39503 30 5V12.4004L29.9961 12.5547C29.9182 14.0884 28.688 15.3186 27.1543 15.3965L27 15.4004H19.5996L19.4453 15.3965C17.9114 15.3188 16.6814 14.0886 16.6035 12.5547L16.5996 12.4004V5C16.5996 3.3949 17.8602 2.08421 19.4453 2.00391L19.5996 2H27L27.1543 2.00391ZM19.5996 4C19.0473 4 18.5996 4.44771 18.5996 5V12.4004C18.5998 12.9525 19.0475 13.4004 19.5996 13.4004H27C27.552 13.4002 27.9998 12.9524 28 12.4004V5C28 4.44785 27.5521 4.00021 27 4H19.5996ZM5 4C4.44772 4 4 4.44771 4 5V12.4004C4.00021 12.9525 4.44784 13.4004 5 13.4004H12.4004C12.9524 13.4002 13.4002 12.9524 13.4004 12.4004V5C13.4004 4.44785 12.9525 4.00021 12.4004 4H5Z" fill="#87878D"/></svg></span>
+        <span class="ic" title="走势图(未开启)"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M29 19.875C29.5523 19.875 30 20.3227 30 20.875V26C30 28.2091 28.2091 30 26 30H6C3.79086 30 2 28.2091 2 26V20.875C2 20.3227 2.44772 19.875 3 19.875C3.55228 19.875 4 20.3227 4 20.875V26C4 27.1046 4.89543 28 6 28H26C27.1046 28 28 27.1046 28 26V20.875C28 20.3227 28.4477 19.875 29 19.875ZM13.5322 9.33789C13.9032 9.3615 14.2304 9.58924 14.3818 9.92871L18.71 19.6289L21.3525 15.7705L21.4277 15.6738C21.6162 15.4603 21.8891 15.3359 22.1777 15.3359H29C29.5523 15.3359 30 15.7837 30 16.3359C30 16.8882 29.5523 17.3359 29 17.3359H22.7051L19.3506 22.2344C19.146 22.533 18.796 22.6976 18.4355 22.665C18.075 22.6324 17.7599 22.4076 17.6123 22.0771L13.332 12.4834L10.6709 16.8555C10.4894 17.1536 10.1654 17.3359 9.81641 17.3359H3C2.44772 17.3359 2 16.8882 2 16.3359C2 15.7837 2.44772 15.3359 3 15.3359H9.25488L12.6143 9.81641C12.8075 9.4989 13.1613 9.31432 13.5322 9.33789ZM26 2C28.2091 2 30 3.79086 30 6V11.125C30 11.6773 29.5523 12.125 29 12.125C28.4477 12.125 28 11.6773 28 11.125V6C28 4.89543 27.1046 4 26 4H6C4.89543 4 4 4.89543 4 6V11.125C4 11.6773 3.55228 12.125 3 12.125C2.44772 12.125 2 11.6773 2 11.125V6C2 3.79086 3.79086 2 6 2H26Z" fill="#87878D"/></svg></span>
+      </div>
+      <div class="cols" data-cols></div>
+      
+    </div>
+  </div>
+  <p class="note">← 列头可横滑;点击列头切换 升序/降序(三角与文字转红)。左 3 图标固定。</p>
+
+  <!-- 变体2:左侧文字 -->
+  <div class="vlabel">变体 B · 左侧文字 <span class="tag">参考佣金宝 18676:52387</span></div>
+  <div class="frame">
+    <div class="hd">
+      <div class="lc text"><span class="txt">名称代码</span></div>
+      <div class="cols" data-cols></div>
+      
+    </div>
+  </div>
+
+  <!-- 变体3:左侧无内容 -->
+  <div class="vlabel">变体 C · 左侧无内容</div>
+  <div class="frame">
+    <div class="hd">
+      <div class="lc empty"></div>
+      <div class="cols" data-cols></div>
+      
+    </div>
+  </div>
+
+  <div class="spec">
+    <div><span class="k">归属</span><b>通用组件</b> · 列表表头(原判为自选业务,现改通用)</div>
+    <div><span class="k">容器</span>高 60 · 宽 750 · 底 cb1 白</div>
+    <div><span class="k">左格变体</span>有图标 / 文字 / 无内容;<b>自选 = 有图标变体</b></div>
+    <div><span class="k">· 有图标</span>图标 32px,left 24,间距 32(即 24 / 88 / 152);图标走场景图标库</div>
+    <div><span class="k">· 文字</span>PingFang Regular 24/36 · ct4 · pl 24(如「名称代码」)</div>
+    <div><span class="k">列头</span>PingFang Regular 24/36 · ct4 · 右对齐 · 每列宽 <b>170</b> · <b>无分割线</b></div>
+    <div><span class="k">排序图标</span>三角排序 16×24(通用图标):默认灰 #CCC;升序上三角红 / 降序下三角红,激活列文字转 cp0</div>
+    <div class="cols-list"><b>自选页列序(有图标变体)</b>:最新 · 涨幅 · 涨跌 · 涨速 · 总手 · 换手 · 金额 · 量比 · 自选收益 · 自选天数 · 自选价格 · 现手 · 开盘 · 最高 · 最低 · 市盈(TTM) · 市盈(动) · 市净率 · 振幅 · 总市值 · 流通市值<br>(列由场景数据决定,通用组件只定列头单元的样式与排序行为)</div>
+  </div>
+</div>
+
+<script>
+const COLS = ["最新","涨幅","涨跌","涨速","总手","换手","金额","量比","自选收益","自选天数","自选价格","现手","开盘","最高","最低","市盈(TTM)","市盈(动)","市净率","振幅","总市值","流通市值"];
+const SORT_SVG = '<svg width="16" height="24" viewBox="0 0 16 24" fill="none"><path class="t-up" d="M4 10.5C3.17595 10.5 2.70557 9.55924 3.2 8.9L7.2 3.56667C7.6 3.03333 8.4 3.03333 8.8 3.56667L12.8 8.9C13.2944 9.55924 12.824 10.5 12 10.5L4 10.5Z"/><path class="t-dn" d="M12 13.5C12.824 13.5 13.2944 14.4408 12.8 15.1L8.8 20.4333C8.4 20.9667 7.6 20.9667 7.2 20.4333L3.2 15.1C2.70557 14.4408 3.17595 13.5 4 13.5L12 13.5Z"/></svg>';
+document.querySelectorAll('[data-cols]').forEach(strip=>{
+  COLS.forEach((name,i)=>{
+    const c=document.createElement('div'); c.className='col';
+    if(strip.closest('.frame').previousElementSibling.textContent.includes('有图标') && i===0){c.classList.add('desc');}
+    c.innerHTML='<span class="lb">'+name+'</span>'+SORT_SVG;
+    c.addEventListener('click',()=>{
+      const was=c.classList.contains('desc')?'desc':c.classList.contains('asc')?'asc':'';
+      strip.querySelectorAll('.col').forEach(x=>x.classList.remove('asc','desc'));
+      if(was==='')c.classList.add('desc'); else if(was==='desc')c.classList.add('asc');
+    });
+    strip.appendChild(c);
+  });
+});
+</script>
+</body></html>

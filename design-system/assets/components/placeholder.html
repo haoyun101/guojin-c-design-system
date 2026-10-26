@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>占位图 Placeholder · 参考实现 · 国金证券设计系统</title>
+<style>
+  :root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+ --line:#E6E8EC; --ct1:var(--H9); --ct3:var(--H8); --ct4:var(--H7); --bg:#F6F7F9; }
+  *{box-sizing:border-box}
+  body{margin:var(--SP0);background:var(--bg);color:var(--ct1);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;padding:var(--SP7) var(--SP5) var(--SP9)}
+  .wrap{max-width:840px;margin:var(--SP0) auto}
+  .top{font-size:13px;color:var(--ct3);margin:var(--SP0) var(--SP0) var(--SP1)}
+  h1{font-size:20px;font-weight:600;margin:var(--SP0) var(--SP0) 0}
+  .sub{font-size:13px;color:var(--ct4);margin:var(--SP0) var(--SP0) var(--SP6)}
+  .note{font-size:12px;color:var(--ct4);background:var(--CB1);border:1px solid var(--line);border-radius:var(--RD2);padding:var(--SP2) var(--SP3);margin:var(--SP0) var(--SP0) var(--SP5);line-height:1.75}
+  .note b{color:var(--ct3)}
+  .card{background:var(--CB1);border:1px solid var(--line);border-radius:var(--RD3);padding:var(--SP5) var(--SP5) var(--SP4);margin:var(--SP0) var(--SP0) var(--SP5)}
+  .h{font-size:14px;font-weight:600;margin:var(--SP0) var(--SP0) var(--SP1)}
+  .grid{display:flex;flex-wrap:wrap;gap:var(--SP6);align-items:flex-end}
+  .item{text-align:center}
+  .meta{font-size:12px;color:var(--ct3);margin-top:var(--SP2);line-height:1.55}
+  .meta b{color:var(--ct1)}
+  .cap{font-size:12px;color:var(--ct3);line-height:1.85;margin:var(--SP3) var(--SP0) var(--SP0)}
+  .cap b{color:var(--ct1)}
+  .tok{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;background:var(--CB2);color:var(--CT3);padding:0 var(--SP1);border-radius:var(--RD1)}
+  .ph{display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .b-aid{border:1px solid var(--CL2)}
+  .bg-l-flat{background:var(--CB2)}
+  .bg-d-flat{background:#1C1E2D}
+  .bg-l-grad{background:linear-gradient(180deg,var(--H1) 0%,var(--H2) 100%)}
+  .bg-d-grad{background:linear-gradient(180deg,var(--H11) 0%,var(--H9) 100%)}
+  .badge{display:inline-block;font-size:11px;color:var(--CT6);background:var(--R6);border-radius:var(--RD9);padding:0 var(--SP2);margin-left:var(--SP1);vertical-align:middle}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB1:#FFFFFF;--CB2:#F2F4F8;--CT3:#55555E;--CT6:#FFFFFF;--H1:#FFFFFF;--H11:#161824;--H2:#F2F4F8;--H7:#87878D;--H8:#55555E;--H9:#0F0F1B;--R6:#F93838;}
+</style>
+<style>
+/* 本文件引用到的 token(值同 assets/design-tokens.css 浅色) */
+:root{--CL2:#EEEEEE;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="top">国金证券客户端设计系统 · 组件参考实现</p>
+  <h1>占位图 / Placeholder <span style="font-size:13px;color:var(--ct4);font-weight:400">(曾用名:兜底图)</span></h1>
+  <p class="sub">来源:佣金宝组件库 V2.0 · 节点 3832:13810 · 通用组件层 · node.fills 精确还原 · 设计系统 v3.8.0</p>
+
+  <div class="note">
+    占位图形 = <b>圆盘 + 国金 logo</b> 两层(用你上传的 SVG 形状)。
+    <b>底色</b>:图标占位=纯色 <span class="tok">#F2F4F8 / #1C1E2D</span>;默认/图片占位=渐变向下 <span class="tok">#FFF→#F2F4F8 / #161824→#0F0F1B</span>。
+    <b>圆盘</b> <span class="tok">#F2F4F8 / #0F0F1B</span>。
+    <b>logo</b> = 白版 白色·不透明度 1→0.3;黑版 <span class="tok">#373746 (CL2)</span>·不透明度 1→0.3(均自上而下)。
+    浅版加细描边仅为校验图看清边界,非规范。
+  </div>
+
+  <!-- ① 图标占位 88 -->
+  <div class="card">
+    <p class="h">① 图标占位图 · 88(宫格 icon 槽兜底)<span class="badge">核心</span></p>
+    <div class="grid">
+      <div class="item">
+        <div class="ph bg-l-flat b-aid" style="width:88px;height:88px;border-radius:var(--RD4)" data-kind="icon" data-variant="l" data-logo="48"></div>
+        <div class="meta"><b>白版</b> · 88×88 · r16<br>底 #F2F4F8(纯)· logo 48</div>
+      </div>
+      <div class="item">
+        <div class="ph bg-d-flat" style="width:88px;height:88px;border-radius:var(--RD4)" data-kind="icon" data-variant="d" data-logo="48"></div>
+        <div class="meta"><b>黑版</b> · 88×88 · r16<br>底 #1C1E2D(纯)· logo 48</div>
+      </div>
+    </div>
+    <p class="cap">图标占位无圆盘,logo 直接居中于圆角矩形底;宫格 icon 加载中/失败时用此兜底。</p>
+  </div>
+
+  <!-- ② 默认占位 -->
+  <div class="card">
+    <p class="h">② 默认占位图 <span class="badge">核心</span></p>
+    <div class="grid">
+      <div class="item">
+        <div class="ph bg-l-grad b-aid" style="width:150px;height:150px;border-radius:var(--RD3)" data-kind="disc" data-variant="l" data-group="100" data-logo="62"></div>
+        <div class="meta"><b>默认 · 白版</b> · 150×150<br>圆盘 100 · logo 62</div>
+      </div>
+      <div class="item">
+        <div class="ph bg-d-grad" style="width:150px;height:150px;border-radius:var(--RD3)" data-kind="disc" data-variant="d" data-group="100" data-logo="62"></div>
+        <div class="meta"><b>默认 · 黑版</b> · 150×150</div>
+      </div>
+      <div class="item">
+        <div class="ph bg-l-grad b-aid" style="width:240px;height:133px;border-radius:var(--RD3)" data-kind="disc" data-variant="l" data-group="107" data-logo="66"></div>
+        <div class="meta"><b>放大版</b> · 360×200<br>(等比缩略示意)· 圆盘 160 · logo 99</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 图片占位 -->
+  <div class="card">
+    <p class="h">③ 图片占位图 · 核心比例 + 头像 <span class="badge">核心</span></p>
+    <div class="grid">
+      <div class="item">
+        <div class="ph bg-l-grad b-aid" style="width:150px;height:150px;border-radius:10px" data-kind="disc" data-variant="l" data-group="100" data-logo="62"></div>
+        <div class="meta"><b>1 : 1</b> · 150×150</div>
+      </div>
+      <div class="item">
+        <div class="ph bg-l-grad b-aid" style="width:215px;height:148px;border-radius:10px" data-kind="disc" data-variant="l" data-group="100" data-logo="62"></div>
+        <div class="meta"><b>16 : 11</b> · 215×148</div>
+      </div>
+      <div class="item">
+        <div class="ph bg-d-grad" style="width:215px;height:148px;border-radius:10px" data-kind="disc" data-variant="d" data-group="100" data-logo="62"></div>
+        <div class="meta"><b>16 : 11 · 黑版</b></div>
+      </div>
+      <div class="item">
+        <div class="ph bg-l-flat b-aid" style="width:96px;height:96px;border-radius:var(--RD9)" data-kind="icon" data-variant="l" data-logo="52"></div>
+        <div class="meta"><b>头像占位</b> · 圆形</div>
+      </div>
+    </div>
+    <p class="cap">
+      <b>缩放规则</b>:图片显示区<b>最小边 ≥226px → 无缩放</b>(占位按切图固定尺寸居中);<b>最小边 &lt;226px → 按最短边等比缩放</b>。头像占位恒为圆形。
+    </p>
+  </div>
+
+  <!-- ④ token -->
+  <div class="card">
+    <p class="h">④ token / 真值汇总(node.fills 精确,与 skill v3.7.x 零漂移)</p>
+    <div style="display:flex;gap:var(--SP5);flex-wrap:wrap;font-size:12px;color:var(--ct3);line-height:1.6">
+      <div>图标底·白 <span class="tok">#F2F4F8</span></div>
+      <div>图标底·暗 <span class="tok">#1C1E2D</span></div>
+      <div>默认/图片底·白 <span class="tok">#FFF→#F2F4F8</span></div>
+      <div>默认/图片底·暗 <span class="tok">#161824→#0F0F1B</span></div>
+      <div>圆盘 <span class="tok">#F2F4F8 / #0F0F1B</span></div>
+      <div>logo·白 <span class="tok">白 α1→0.3</span></div>
+      <div>logo·暗 <span class="tok">#373746 α1→0.3</span></div>
+      <div>图标占位 <span class="tok">88·r16·logo48</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var PATHS='<path fill="{F}" d="M41.9919 25.2042C45.9698 25.2042 49.1945 21.9799 49.1945 18.0025C49.1945 14.0251 45.9698 10.8007 41.9919 10.8007C38.0141 10.8007 34.7893 14.0251 34.7893 18.0025C34.7893 21.9799 38.0141 25.2042 41.9919 25.2042Z"/>'
+    +'<path fill="{F}" d="M39.5912 26.5112V36.6089C39.5912 38.2654 38.2466 39.6099 36.5899 39.6127H23.3818C21.7251 39.6099 20.3805 38.2654 20.3805 36.6089V23.4053C20.3805 21.7488 21.7251 20.4043 23.3818 20.4015H33.4808L38.2012 7.45026C25.7449 2.92329 11.9779 9.34784 7.45043 21.8027C2.92292 34.2575 9.34824 48.0228 21.8046 52.5497C34.2609 57.0767 48.0279 50.6522 52.5554 38.1973C54.4815 32.9017 54.4815 27.0983 52.5554 21.8027L39.5912 26.5112Z"/>';
+  function logoSVG(variant,size){
+    var gid='g'+Math.random().toString(36).slice(2,8);
+    var base = variant==='d' ? '#373746' : '#FFFFFF';
+    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="display:block">'
+      +'<defs><linearGradient id="'+gid+'" x1="30" y1="0" x2="30" y2="60" gradientUnits="userSpaceOnUse">'
+      +'<stop stop-color="'+base+'" stop-opacity="1"/><stop offset="1" stop-color="'+base+'" stop-opacity="0.3"/></linearGradient></defs>'
+      + PATHS.replace(/\{F\}/g,'url(#'+gid+')') + '</svg>';
+  }
+  document.querySelectorAll('.ph[data-kind]').forEach(function(el){
+    var v=el.dataset.variant, kind=el.dataset.kind;
+    if(kind==='icon'){ el.innerHTML=logoSVG(v, +el.dataset.logo); return; }
+    var G=+el.dataset.group, L=+el.dataset.logo;
+    var disc = v==='d' ? '#0F0F1B' : '#F2F4F8';
+    el.innerHTML='<div style="position:relative;width:'+G+'px;height:'+G+'px;display:flex;align-items:center;justify-content:center">'
+      +'<div style="position:absolute;inset:0;border-radius:50%;background:'+disc+'"></div>'
+      +'<div style="position:relative;line-height:0">'+logoSVG(v,L)+'</div></div>';
+  });
+</script>
+</body>
+</html>

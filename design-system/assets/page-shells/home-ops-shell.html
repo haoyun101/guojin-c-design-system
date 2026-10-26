@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<title>运营长页外壳范例 v3.23.0</title>
+<!-- 运营长页(十几模块竖向堆叠)范例:首页=一级页面(data-level=1,间距16),基于 base-mobile 的 gap 容器机制。
+     ★全部模块间距由 main 的 gap 单点保证(一级 16),模块高度各异但间隙永远一致——物理上不漂移。
+     AI 用法:把每个运营模块(问候/金刚区/精选卡/资讯…)各包成一个 <section class="gj-module">,内部填登记组件;
+     绝不在模块上加 margin-top / 用 height 撑间距。装饰底纹等真资产未到位时用占位(待上传)。-->
+<style>
+:root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+--CB1:#FFF;--CB2:#F2F4F8;--CT1:#0F0F1B;--CT3:#55555E;--CT4:#9A9AA2;--CP0:#F93838;--CL1:#EEE;
+--sb:88px;--nav:88px;--tab:98px;--home:68px;
+--pad1:var(--SP4);--gap1:var(--SP4)}
+*{box-sizing:border-box;margin:var(--SP0)}body{background:var(--H14);font-family:"PingFang SC",sans-serif}
+.shell{width:750px;margin:var(--SP5) auto;background:var(--CB2);position:relative;overflow:hidden}
+.statusbar{height:var(--sb);background:var(--CB2)}
+.navbar{height:var(--nav);background:var(--CB2);display:flex;align-items:center;padding:var(--SP0) var(--SP4);font-size:36px;color:var(--CT1);font-weight:600}
+main{display:flex;flex-direction:column;gap:var(--gap1);padding:var(--SP0) var(--pad1) calc(var(--tab) + var(--home) + var(--SP6))}
+.gj-module{background:var(--CB1);border-radius:var(--RD6);padding:var(--SP5);color:var(--CT3);font-size:26px;display:flex;align-items:center}
+.gj-module .tag{font-size:20px;color:var(--CT4);margin-left:auto}
+.m-greet{background:linear-gradient(180deg,var(--R1),var(--H1));height:120px;font-size:32px;color:var(--CT1)}
+.m-grid{height:200px}.m-vip{height:260px}.m-news{height:300px}.m-live{height:180px}
+.bottomnav{height:calc(var(--tab) + var(--home));background:var(--CB1);border-top:1px solid var(--CL1);display:flex;align-items:flex-start}
+.bottomnav .slot{height:var(--tab);flex:1;display:flex;align-items:center;justify-content:center;color:var(--CT3);font-size:24px}
+</style><style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--H1:#FFFFFF;}
+</style>
+<style>
+/* 本文件引用到的 token(值同 assets/design-tokens.css 浅色) */
+:root{--H14:#373746;--R1:#FFF2F0;}
+</style>
+</head><body>
+<div class="shell" data-level="1">
+<div class="statusbar"></div><div class="navbar">首页</div>
+<main>
+<section class="gj-module m-greet">早上好,XX <span class="tag">小宝 #gj-xb</span></section>
+<section class="gj-module m-grid">金刚区 5 宫格 <span class="tag">[待] 彩色图标待上传</span></section>
+<section class="gj-module m-vip">VIP 精选单 <span class="tag">[待] 运营插画待上传</span></section>
+<section class="gj-module">AI 投顾区 <span class="tag">C01/C13</span></section>
+<section class="gj-module m-news">看资讯榜单 <span class="tag">时间轴 C07 / [待]榜单图标</span></section>
+<section class="gj-module">跟资金 <span class="tag">行情卡片 C15</span></section>
+<section class="gj-module">抓热点 <span class="tag">标签 C13</span></section>
+<section class="gj-module">求稳健 <span class="tag">C09</span></section>
+<section class="gj-module m-live">看直播 <span class="tag">[待] K线底纹待上传</span></section>
+<section class="gj-module">跟策略 <span class="tag">列表 C14</span></section>
+<section class="gj-module">聚好玩 <span class="tag">分页符 C10</span></section>
+<section class="gj-module">自定义按钮 <span class="tag">C01 通栏</span></section>
+</main>
+<div class="bottomnav"><div class="slot">底导(bottom-info-bar.html · 智能体球版)</div></div>
+</div></body></html>

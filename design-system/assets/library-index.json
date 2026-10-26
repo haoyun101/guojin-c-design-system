@@ -1,0 +1,558 @@
+{
+  "_说明": "库内资产唯一可查索引。用任何资产前先在此查到确切引用;查不到才占位并标[待]。改资产后重跑 scripts/build-index.py。",
+  "_优先级": "图标:单色先查 iconfont,再查 svg;组件:先查 components 参考实现(每条带 quickcard 锚点;形态/变体/辨识单一真源在 references/component-quickcards.md,index 不重述);颜色/字体:先查 tokens。",
+  "icons": {
+    "iconfont": {
+      "tianjia": {
+        "class": "icon-tianjia",
+        "unicode": "e631",
+        "gloss": "添加/加自选"
+      },
+      "qiehuanheiban": {
+        "class": "icon-qiehuanheiban",
+        "unicode": "e632",
+        "gloss": "切换黑版"
+      },
+      "shibai": {
+        "class": "icon-shibai",
+        "unicode": "e633",
+        "gloss": "失败"
+      },
+      "shuoming": {
+        "class": "icon-shuoming",
+        "unicode": "e634",
+        "gloss": "说明"
+      },
+      "shixinjiantou-shang": {
+        "class": "icon-shixinjiantou-shang",
+        "unicode": "e635",
+        "gloss": "实心箭头上"
+      },
+      "licaishouye": {
+        "class": "icon-licaishouye",
+        "unicode": "e636",
+        "gloss": "理财首页"
+      },
+      "huanyihuan": {
+        "class": "icon-huanyihuan",
+        "unicode": "e637",
+        "gloss": "换一换"
+      },
+      "gengduo": {
+        "class": "icon-gengduo",
+        "unicode": "e638",
+        "gloss": "更多"
+      },
+      "shezhi": {
+        "class": "icon-shezhi",
+        "unicode": "e639",
+        "gloss": "设置"
+      },
+      "guanbi": {
+        "class": "icon-guanbi",
+        "unicode": "e63a",
+        "gloss": "关闭"
+      },
+      "jiesuo": {
+        "class": "icon-jiesuo",
+        "unicode": "e63b",
+        "gloss": "解锁"
+      },
+      "changwaizhuanchangnei": {
+        "class": "icon-changwaizhuanchangnei",
+        "unicode": "e609",
+        "gloss": "场外转场内"
+      },
+      "dingtoujisuanqi": {
+        "class": "icon-dingtoujisuanqi",
+        "unicode": "e63c",
+        "gloss": "定投计算器"
+      },
+      "cebianlan": {
+        "class": "icon-cebianlan",
+        "unicode": "e63d",
+        "gloss": "侧边栏"
+      },
+      "biaotouguanli": {
+        "class": "icon-biaotouguanli",
+        "unicode": "e63e",
+        "gloss": "表头管理"
+      },
+      "chenggong": {
+        "class": "icon-chenggong",
+        "unicode": "e63f",
+        "gloss": "成功"
+      },
+      "biaodelianjie": {
+        "class": "icon-biaodelianjie",
+        "unicode": "e640",
+        "gloss": "表单链接"
+      },
+      "dingyue": {
+        "class": "icon-dingyue",
+        "unicode": "e641",
+        "gloss": "订阅"
+      },
+      "bangzhu": {
+        "class": "icon-bangzhu",
+        "unicode": "e642",
+        "gloss": "帮助"
+      },
+      "bianji": {
+        "class": "icon-bianji",
+        "unicode": "e643",
+        "gloss": "编辑"
+      },
+      "qiehuanbaiban": {
+        "class": "icon-qiehuanbaiban",
+        "unicode": "e61b",
+        "gloss": "切换白版"
+      },
+      "honglizaitouzi": {
+        "class": "icon-honglizaitouzi",
+        "unicode": "e61d",
+        "gloss": "红利再投资"
+      },
+      "xiaoxi": {
+        "class": "icon-xiaoxi",
+        "unicode": "e61e",
+        "gloss": "消息"
+      },
+      "shouyijisuanqi": {
+        "class": "icon-shouyijisuanqi",
+        "unicode": "e61f",
+        "gloss": "收益计算器"
+      },
+      "fenxiang": {
+        "class": "icon-fenxiang",
+        "unicode": "e620",
+        "gloss": "分享"
+      },
+      "pengyouquan": {
+        "class": "icon-pengyouquan",
+        "unicode": "e621",
+        "gloss": "朋友圈"
+      },
+      "guanhuaibanqiehuan": {
+        "class": "icon-guanhuaibanqiehuan",
+        "unicode": "e622",
+        "gloss": "关怀版切换"
+      },
+      "rili": {
+        "class": "icon-rili",
+        "unicode": "e623",
+        "gloss": "日历"
+      },
+      "pinglun": {
+        "class": "icon-pinglun",
+        "unicode": "e624",
+        "gloss": "评论"
+      },
+      "zhiding": {
+        "class": "icon-zhiding",
+        "unicode": "e625",
+        "gloss": "置顶"
+      },
+      "sousuo": {
+        "class": "icon-sousuo",
+        "unicode": "e626",
+        "gloss": "搜索"
+      },
+      "xianshi": {
+        "class": "icon-xianshi",
+        "unicode": "e627",
+        "gloss": "显示"
+      },
+      "shixinjiantou-you": {
+        "class": "icon-shixinjiantou-you",
+        "unicode": "e628",
+        "gloss": "实心箭头右"
+      },
+      "shouqi": {
+        "class": "icon-shouqi",
+        "unicode": "e629",
+        "gloss": "收起"
+      },
+      "weixin": {
+        "class": "icon-weixin",
+        "unicode": "e62a",
+        "gloss": "微信"
+      },
+      "shijian": {
+        "class": "icon-shijian",
+        "unicode": "e62b",
+        "gloss": "时间"
+      },
+      "guanzhu": {
+        "class": "icon-guanzhu",
+        "unicode": "e62c",
+        "gloss": "关注"
+      },
+      "jiazixuan": {
+        "class": "icon-jiazixuan",
+        "unicode": "e62d",
+        "gloss": "加自选"
+      },
+      "qupinglun": {
+        "class": "icon-qupinglun",
+        "unicode": "e62e",
+        "gloss": "去评论"
+      },
+      "shixinjiantou-zuo": {
+        "class": "icon-shixinjiantou-zuo",
+        "unicode": "e62f",
+        "gloss": "实心箭头左"
+      },
+      "saoyisao": {
+        "class": "icon-saoyisao",
+        "unicode": "e630",
+        "gloss": "扫一扫"
+      },
+      "suoding": {
+        "class": "icon-suoding",
+        "unicode": "e60b",
+        "gloss": "锁定"
+      },
+      "zhihuitou": {
+        "class": "icon-zhihuitou",
+        "unicode": "e60c",
+        "gloss": "指回头"
+      },
+      "tongzhi": {
+        "class": "icon-tongzhi",
+        "unicode": "e60d",
+        "gloss": "通知"
+      },
+      "tiaozhuangengduo-juzhongduiqi": {
+        "class": "icon-tiaozhuangengduo-juzhongduiqi",
+        "unicode": "e60e",
+        "gloss": "跳转更多(居中)"
+      },
+      "zhankai": {
+        "class": "icon-zhankai",
+        "unicode": "e60f",
+        "gloss": "展开"
+      },
+      "zixuanzijin": {
+        "class": "icon-zixuanzijin",
+        "unicode": "e610",
+        "gloss": "自选资金/资金"
+      },
+      "xianjinfenhong": {
+        "class": "icon-xianjinfenhong",
+        "unicode": "e611",
+        "gloss": "现金分红"
+      },
+      "shixinjiantou-xia": {
+        "class": "icon-shixinjiantou-xia",
+        "unicode": "e612",
+        "gloss": "实心箭头下"
+      },
+      "tiaozhuangengduo-youduiqi": {
+        "class": "icon-tiaozhuangengduo-youduiqi",
+        "unicode": "e613",
+        "gloss": "跳转更多(右对齐)"
+      },
+      "zixuanzixun": {
+        "class": "icon-zixuanzixun",
+        "unicode": "e614",
+        "gloss": "自选资讯/资讯"
+      },
+      "sousuoguanbi": {
+        "class": "icon-sousuoguanbi",
+        "unicode": "e615",
+        "gloss": "搜索关闭"
+      },
+      "tuichu": {
+        "class": "icon-tuichu",
+        "unicode": "e616",
+        "gloss": "退出"
+      },
+      "yincang": {
+        "class": "icon-yincang",
+        "unicode": "e617",
+        "gloss": "隐藏"
+      },
+      "shezixuan": {
+        "class": "icon-shezixuan",
+        "unicode": "e60a",
+        "gloss": "设自选"
+      },
+      "guandian": {
+        "class": "icon-guandian",
+        "unicode": "e618",
+        "gloss": "观点"
+      },
+      "shoucang": {
+        "class": "icon-shoucang",
+        "unicode": "e619",
+        "gloss": "收藏"
+      },
+      "shanchuzixuan": {
+        "class": "icon-shanchuzixuan",
+        "unicode": "e61a",
+        "gloss": "删除自选"
+      }
+    },
+    "svg": {
+      "common/sort-triangle-down.svg": "",
+      "common/sort-triangle-up.svg": "",
+      "common/sort-triangle.svg": "",
+      "market/add-stock.svg": "",
+      "market/edit.svg": "",
+      "market/image-recognition.svg": "",
+      "market/multi-column.svg": "",
+      "market/shishi.svg": "",
+      "market/signal-disabled-dark.svg": "",
+      "market/signal-disabled-light.svg": "",
+      "market/signal-off-dark.svg": "",
+      "market/signal-off-light.svg": "",
+      "market/signal-on-dark.svg": "",
+      "market/signal-on-light.svg": "",
+      "market/trend-off.svg": "",
+      "market/trend-on.svg": "",
+      "bottom-nav/finance-active.svg": "",
+      "bottom-nav/finance-inactive.svg": "",
+      "bottom-nav/home-active.svg": "",
+      "bottom-nav/home-inactive.svg": "",
+      "bottom-nav/home-refresh.svg": "",
+      "bottom-nav/mine-active.svg": "",
+      "bottom-nav/mine-inactive.svg": "",
+      "bottom-nav/trade-active.svg": "",
+      "bottom-nav/trade-inactive.svg": "",
+      "bottom-nav/watchlist-active.svg": "",
+      "bottom-nav/watchlist-inactive.svg": "",
+      "gradient/agent-close.svg": "",
+      "gradient/agent-orb-wave.svg": "",
+      "gradient/dajia-zaikan.svg": "",
+      "gradient/xiaobao-thinking.svg": "",
+      "gradient/xiaobao.svg": ""
+    }
+  },
+  "components": {
+    "C01 常规按钮": {
+      "ref": "references/components.md#一、常规按钮",
+      "html": "assets/components/button.html",
+      "quickcard": "references/component-quickcards.md#C01",
+      "self_contained": true,
+      "requires": "无(自包含:内联 iconfont woff2 + token 定义)",
+      "note": "DS v3.30.0 新增;六档 × 四风格 × 三状态 + XL 胶囊组合;运营气泡仅留槽位未画"
+    },
+    "C02 文字按钮": {
+      "ref": "references/components.md#二、文字按钮",
+      "html": null,
+      "quickcard": "references/component-quickcards.md#C02",
+      "self_contained": "n/a",
+      "requires": "无独立参考实现;按 components.md 规格生成",
+      "note": "待补 text-button.html"
+    },
+    "C03 导航栏-顶部": {
+      "ref": "references/components.md#三、导航栏",
+      "html": "assets/components/top-nav.html",
+      "quickcard": "references/component-quickcards.md#C03-导航栏-顶部",
+      "self_contained": "partial",
+      "requires": "整包相对路径或粘贴 assets/components/sandbox-header.html",
+      "note": "图标字体/小宝资产需就绪"
+    },
+    "C03 导航栏-底部·通用(规则集/可自定义N-tab)": {
+      "ref": "references/components.md#三、导航栏",
+      "html": "assets/components/bottom-nav.html",
+      "quickcard": "references/component-quickcards.md#C03-导航栏-底部",
+      "self_contained": false,
+      "requires": "整包相对路径或粘贴 assets/components/sandbox-header.html",
+      "note": "依赖 bottom-nav SVG sprite"
+    },
+    "C03 导航栏-底部·一级页面(智能体球+信息栏;首页/自选/我的/交易/理财用此)": {
+      "ref": "references/components.md#三、导航栏",
+      "html": "assets/components/bottom-info-bar.html",
+      "usage": "assets/components/bottom-info-bar.usage.md",
+      "quickcard": "references/component-quickcards.md#C03-导航栏-底部",
+      "self_contained": "partial",
+      "requires": "优先读 bottom-info-bar.usage.md;整包相对路径;单文件时谨慎处理 agent-orb-wave 大资产",
+      "note": "大型参考实现不默认全文读取;agent-orb-wave 约197KB,勿 base64 内联"
+    },
+    "C04 标题栏&tab": {
+      "ref": "references/components.md#四、标题栏",
+      "html": "assets/components/title-tab-bar.html",
+      "quickcard": "references/component-quickcards.md#C04",
+      "self_contained": "partial",
+      "requires": "整包相对路径或粘贴 assets/components/sandbox-header.html",
+      "note": "图标字体需就绪"
+    },
+    "C05 开关": {
+      "ref": "references/components.md#五、开关",
+      "html": "assets/components/switch.html",
+      "quickcard": "references/component-quickcards.md#C05",
+      "self_contained": true,
+      "requires": "无额外资产",
+      "note": "可直接复用参考实现"
+    },
+    "C06 Toast": {
+      "ref": "references/components.md#六、Toast",
+      "html": "assets/components/toast.html",
+      "quickcard": "references/component-quickcards.md#C06",
+      "self_contained": true,
+      "requires": "无额外资产",
+      "note": "可直接复用参考实现"
+    },
+    "C07 时间轴": {
+      "ref": "references/components.md#七、时间轴",
+      "html": "assets/components/timeline.html",
+      "quickcard": "references/component-quickcards.md#C07",
+      "self_contained": true,
+      "requires": "无额外资产",
+      "note": "可直接复用参考实现"
+    },
+    "C08 单复选框": {
+      "ref": "references/components.md#八、单复选",
+      "html": "assets/components/radio-checkbox.html",
+      "quickcard": "references/component-quickcards.md#C08",
+      "self_contained": true,
+      "requires": "无额外资产",
+      "note": "可直接复用参考实现"
+    },
+    "C09 进度条": {
+      "ref": "references/components.md#九、进度条",
+      "html": "assets/components/progress.html",
+      "quickcard": "references/component-quickcards.md#C09",
+      "self_contained": "partial",
+      "requires": "整包相对路径; 依赖 assets/fonts/GJType-Medium.ttf",
+      "note": "可直接复用参考实现; 进度值使用 GJType Medium"
+    },
+    "C10 分页符": {
+      "ref": "references/components.md#十、分页符",
+      "html": "assets/components/pagination.html",
+      "quickcard": "references/component-quickcards.md#C10",
+      "self_contained": true,
+      "requires": "无额外资产",
+      "note": "可直接复用参考实现"
+    },
+    "C11 占位图": {
+      "ref": "references/components.md#十一、占位图",
+      "html": "assets/components/placeholder.html",
+      "quickcard": "references/component-quickcards.md#C11",
+      "self_contained": true,
+      "requires": "无额外资产",
+      "note": "可直接复用参考实现"
+    },
+    "C12 图标宫格": {
+      "ref": "references/components.md#十二、图标宫格",
+      "html": "assets/components/icon-grid.html",
+      "quickcard": "references/component-quickcards.md#C12",
+      "self_contained": "partial",
+      "requires": "整包相对路径或粘贴 assets/components/sandbox-header.html",
+      "note": "部分彩色图标仍待补"
+    },
+    "C13 标签-通用": {
+      "ref": "references/components.md#十三、标签",
+      "html": "assets/components/tag.html",
+      "quickcard": "references/component-quickcards.md#C13",
+      "self_contained": true,
+      "requires": "无额外资产",
+      "note": "可直接复用参考实现"
+    },
+    "C13 标签-个股": {
+      "ref": "references/components.md#十三、标签",
+      "html": "assets/components/stock-tag.html",
+      "quickcard": "references/component-quickcards.md#C13",
+      "self_contained": true,
+      "requires": "无额外资产",
+      "note": "可直接复用参考实现"
+    },
+    "C14 列表表头": {
+      "ref": "references/components.md#十四、列表表头",
+      "html": "assets/components/list-header.html",
+      "quickcard": "references/component-quickcards.md#C14",
+      "self_contained": false,
+      "requires": "整包相对路径或粘贴 assets/components/sandbox-header.html",
+      "note": "依赖 common/market SVG 与图标字体"
+    },
+    "C15 行情卡片": {
+      "ref": "references/components.md#十五、行情卡片",
+      "html": "assets/components/market-card.html",
+      "quickcard": "references/component-quickcards.md#C15",
+      "self_contained": true,
+      "requires": "无额外资产",
+      "note": "可直接复用参考实现"
+    },
+    "通用-状态栏": {
+      "ref": "references/components.md#三、导航栏",
+      "html": "assets/components/status-bar.html",
+      "quickcard": "references/component-quickcards.md#通用-状态栏",
+      "self_contained": true,
+      "requires": "无额外资产",
+      "note": "可直接复用参考实现"
+    },
+    "行情/自选个股列表项": {
+      "ref": "references/scenarios/market.md#3.1",
+      "html": "assets/components/scenarios/market/stock-list-item.html",
+      "quickcard": "references/component-quickcards.md#业务组件",
+      "self_contained": false,
+      "requires": "整包相对路径或粘贴 assets/components/sandbox-header.html",
+      "note": "依赖字体/标签等库片段"
+    },
+    "行情/指数行情卡片": {
+      "ref": "references/scenarios/market.md#3.2",
+      "html": "assets/components/scenarios/market/stock-index-card.html",
+      "quickcard": "references/component-quickcards.md#业务组件",
+      "self_contained": true,
+      "requires": "已内嵌字体与核心样式",
+      "note": "可直接复用参考实现"
+    },
+    "页面状态-骨架图": {
+      "ref": "references/skeleton.md",
+      "html": "assets/components/skeleton.html",
+      "self_contained": true,
+      "requires": "无(复制 <script id=\"gj-skeleton\"> 整块)",
+      "note": "页面加载态;非独立组件,对已生成页面调用 GJSkeleton.apply(容器) 转换"
+    }
+  },
+  "tokens": {
+    "涨/主色/CS1": "--cs1 #f93838",
+    "跌/CS2": "--cs2 #05b063",
+    "平/CS3": "--cs3 #55555e",
+    "品牌主色/CP0": "--cp0 #f93838",
+    "功能蓝/CF3": "--cf3 #2b73ff",
+    "橙字/CF2": "--cf2 #ff7015",
+    "主文本/CT1": "--ct1 #0f0f1b",
+    "次文本/CT3": "--ct3 #55555e",
+    "辅助文本/CT4": "--ct4 #87878d",
+    "反白/CT6": "--ct6 #fff",
+    "卡片底/CB1": "--cb1 #fff",
+    "页面底/CB2": "--cb2 #f2f4f8",
+    "浅灰底/CB3": "--cb3 #f2f4f8",
+    "红淡底/CB13": "--cb13 rgba(249,56,56,.08)",
+    "蓝淡底/CB14": "--cb14 rgba(43,115,255,.08)",
+    "绿淡底/CB27": "--cb27 rgba(5,176,99,.08)",
+    "指数红5%/CB10": "--cb10 rgba(249,56,56,.05)",
+    "指数绿5%/CB11": "--cb11 rgba(5,176,99,.05)",
+    "指数灰5%/CB12": "--cb12 rgba(85,85,94,.05)",
+    "描边红/CL3": "--cl3 #f93838",
+    "描边橙/CL4": "--cl4 #ff8533",
+    "描边蓝/CL5": "--cl5 #2b73ff",
+    "数字字体": "GJType(C端统一;Figma 的 D-DIN 入库一律改 GJType)",
+    "中文字体": "PingFang SC",
+    "间距/SP0": "--SP0 0px",
+    "间距/SP1": "--SP1 4px",
+    "间距/SP2": "--SP2 8px",
+    "间距/SP3": "--SP3 12px",
+    "间距/SP4": "--SP4 16px",
+    "间距/SP5": "--SP5 20px",
+    "间距/SP6": "--SP6 24px",
+    "间距/SP7": "--SP7 32px",
+    "间距/SP8": "--SP8 40px",
+    "间距/SP9": "--SP9 60px",
+    "间距/SP10": "--SP10 80px",
+    "圆角/RD0": "--RD0 0px",
+    "圆角/RD1": "--RD1 4px",
+    "圆角/RD2": "--RD2 8px",
+    "圆角/RD3": "--RD3 12px",
+    "圆角/RD4": "--RD4 16px",
+    "圆角/RD5": "--RD5 20px",
+    "圆角/RD6": "--RD6 24px",
+    "圆角/RD7": "--RD7 32px",
+    "圆角/RD8": "--RD8 40px",
+    "圆角/RD9": "--RD9 999px",
+    "圆角/RD10": "--RD10 6px"
+  }
+}

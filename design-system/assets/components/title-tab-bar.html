@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=750">
+<title>标题栏 & tab栏 · 参考实现(设计系统 v2.0.0)</title>
+<style>
+  /* token(节选自 design-tokens.css;正式项目直接引入全量文件) */
+  :root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+
+    --CT1:#0F0F1B;--CT3:#55555E;--H7:#87878D;--CL2:#EEEEEE;--H2:#F2F4F8;--CB1:#FFFFFF;--H1:#FFFFFF;
+    --CP0:#F93838;--R1:#FFF2F0;--R2:#FFE0DB;--G6:#05B063;--R6-30:rgba(249,56,56,.3);
+  }
+  *{box-sizing:border-box;margin:var(--SP0);padding:var(--SP0);}
+  body{font-family:"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;background:var(--CB1);width:750px;}
+
+  /* ========== 标题栏族(静态信息层:不滚动、无选中态) ========== */
+  .tbar{display:flex;align-items:center;gap:var(--SP4);background:var(--CB1);}
+  .tb1{height:48px;padding:var(--SP0) 36px;} /* 内容区678 */
+  .tb2,.tb3{height:44px;padding:var(--SP0) 48px;} /* 内容区654 */
+  .tl{display:flex;align-items:center;flex:1;min-width:0;}
+  .tb1 .tl{gap:var(--SP4);} .tb2 .tl,.tb3 .tl{gap:var(--SP2);}
+  .tt{color:var(--CT1);font-weight:500;white-space:nowrap;}
+  .tb1 .tt{font-size:32px;line-height:48px;} .tb2 .tt,.tb3 .tt{font-size:28px;line-height:44px;}
+  /* 标题栏-三级:主标题下独立矩形装饰线 112×6 圆角0 R2(非文字下划线)
+     距文字底约2px(bottom:5px≈行内底+2)· z-index:-1 置文字层下方,不遮字 */
+  .tb3 .tt{position:relative;z-index:0;}
+  .tb3 .tt::after{content:"";position:absolute;left:0;bottom:5px;width:112px;height:6px;background:var(--R2);border-radius:var(--RD0);z-index:-1;}
+  .ts{color:var(--CT3);font-size:26px;line-height:40px;white-space:nowrap;}
+  .tr{display:flex;align-items:center;}
+  /* 一级右操作=文字按钮「更多-list」实例:默认仅箭头24;开启「文字」属性时加 .more 文案26、文字↔图标间距0 */
+  .more{color:var(--H7);font-size:26px;margin-right:var(--SP0);}
+
+  /* ========== tab栏族(交互导航层:单栏不回行) ========== */
+  /* tab-下划线(一级/二级 × 左固/等分) */
+  .tabbar{display:flex;align-items:flex-start;position:relative;background:var(--CB1);}
+  .tfix{gap:var(--SP7);padding:var(--SP4) var(--SP0) var(--SP4) var(--SP6);overflow-x:auto;}       /* 左固:左起24、间距32、超宽横滑 */
+  .tfix .tab{flex:0 0 auto;}
+  .teq{padding:var(--SP4) var(--SP6);}                                          /* 等分:容器padding 16/24 */
+  .teq .tab{flex:1;}
+  .tab{display:flex;flex-direction:column;align-items:center;}
+  .tab .x{white-space:nowrap;}
+  .tab.sel .x{color:var(--CT1);font-weight:500;}
+  .tab.un .x{color:var(--CT3);font-weight:400;padding-bottom:var(--SP2);}
+  .ul{width:24px;height:6px;border-radius:10px;background:var(--CP0);margin-top:2px;}
+  .l1 .tab.sel .x{font-size:36px;line-height:52px;} .l1 .tab .x{font-size:32px;line-height:48px;}
+  .l2 .tab.sel .x{font-size:32px;line-height:48px;} .l2 .tab .x{font-size:32px;line-height:48px;}
+
+  /* 原子-tab 胶囊四档(未选底色全档统一灰 H2·已裁决) */
+  .pill{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;}
+  .pM{padding:var(--SP2) var(--SP6);border-radius:36px;font-size:28px;line-height:44px;}  /* tab-胶囊-M 高60 */
+  .pM.sel{background:var(--R1);color:var(--CP0);font-weight:500;}
+  .pM.un{background:var(--H2);color:var(--H7);font-weight:400;}
+  .pS24{height:52px;padding:9px var(--SP6);border-radius:36px;font-size:24px;border:1px solid transparent;} /* tab-胶囊-S(字24) */
+  .pS24.sel{background:var(--R1);color:var(--CP0);font-weight:500;border-color:var(--R6-30);}
+  .pS24.un{background:var(--H2);color:var(--CT3);font-weight:400;border-color:var(--CL2);}
+  .pS28{height:52px;padding:9px var(--SP6);border-radius:36px;font-size:28px;border:1px solid transparent;} /* tab-胶囊-S(字28) */
+  .pS28.sel{background:var(--R1);color:var(--CP0);font-weight:500;border-color:var(--R6-30);}
+  .pS28.un{background:var(--H2);color:var(--CT3);font-weight:400;border-color:var(--CL2);}
+  .pXS{padding:var(--SP1) var(--SP5);border-radius:50px;font-size:24px;line-height:36px;}  /* tab-胶囊-XS 高44 */
+  .pXS.sel{background:var(--H1);color:var(--CP0);font-weight:500;}
+  .pXS.un{background:var(--H2);color:var(--CT3);font-weight:400;}
+
+  /* tab-胶囊-M-左固:容器左24、右0、垂直hug(=60)、间距16 */
+  .pillfix{display:flex;align-items:center;gap:var(--SP4);padding:var(--SP0) var(--SP0) var(--SP0) var(--SP6);overflow-x:auto;}
+  .pillfix .pill{flex:0 0 auto;}
+  /* tab-胶囊-S(字24)-左固:左24、右0(尾部可滚出) */
+  .pillrow{display:flex;align-items:center;gap:var(--SP4);flex-wrap:nowrap;overflow-x:auto;padding:var(--SP4) var(--SP0) var(--SP4) var(--SP6);}
+  /* tab-胶囊-XS-通栏:容器灰底H2 圆角25 padding4 */
+  .full{display:inline-flex;align-items:center;background:var(--H2);border-radius:25px;padding:var(--SP1);}
+  .center{display:flex;justify-content:center;padding:var(--SP4) var(--SP6);}
+
+  /* 原子-标签选项卡 = tab-连体(60/80/100):段等宽、段间-1px、选中底R1字重500全档统一 */
+  .seg{display:flex;align-items:stretch;}
+  .seg .s{display:flex;align-items:center;justify-content:center;border:1px solid var(--CL2);margin-left:-1px;white-space:nowrap;}
+  .seg .s:first-child{margin-left:var(--SP0);border-radius:10px var(--RD0) var(--RD0) 10px;}
+  .seg .s:last-child{border-radius:var(--RD0) 10px 10px var(--RD0);}
+  .seg .s.sel{background:var(--R1);color:var(--CP0);border-color:var(--R1);z-index:1;font-weight:500;}
+  .seg .s.un{background:var(--H1);color:var(--H7);}
+  .seg60 .s{width:160px;height:60px;font-size:28px;}
+  .seg80 .s{width:142px;height:80px;font-size:28px;line-height:44px;}
+  .seg100 .s{width:142px;height:100px;flex-direction:column;justify-content:center;}
+  .seg100 .s .nm{font-size:24px;line-height:36px;}
+  .seg100 .s.sel .nm{color:var(--CP0);font-weight:500;} .seg100 .s.un .nm{color:var(--H7);font-weight:400;}
+  .seg100 .s .pc{font-size:24px;line-height:24px;font-family:"GJType","D-DIN-PRO",monospace;} /* 紧贴选项名,行间距0 */
+  .up{color:var(--CP0);} .down{color:var(--G6);}
+  /* 容器:750、上下padding10、段组水平居中(已裁决) */
+  .segwrap{display:flex;justify-content:center;padding:var(--SP2) var(--SP0);}
+
+  /* 交互通用 */
+  .tab,.pill,.seg .s{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+  /* 横滑容器隐藏滚动条(规范要求) */
+  .tfix,.pillfix,.pillrow{scrollbar-width:none;-ms-overflow-style:none;}
+  .tfix::-webkit-scrollbar,.pillfix::-webkit-scrollbar,.pillrow::-webkit-scrollbar{display:none;}
+
+  .demo{font-size:20px;color:var(--H7);padding:var(--SP5) var(--SP6) var(--SP1);background:var(--H2);}
+</style>
+</head>
+<body>
+
+<div class="demo">标题栏-一级 / 二级 / 三级(三级装饰线置文字层下方;一级右操作默认仅箭头)</div>
+<div class="tbar tb1">
+  <div class="tl"><span class="tt">标题名称</span><span class="ts">副标题</span></div>
+  <div class="tr"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="#87878D" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+</div>
+<div class="tbar tb2">
+  <div class="tl"><span class="tt">标题名称</span><span class="ts">副标题</span></div>
+  <div class="tr"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="#87878D" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+</div>
+<div class="tbar tb3">
+  <div class="tl"><span class="tt">标题名称</span><span class="ts">副标题</span></div>
+  <div class="tr"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="#87878D" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+</div>
+
+<div class="demo">tab-下划线-一级-左固(超宽横滑)/ tab-下划线-一级-等分</div>
+<div class="tabbar tfix l1">
+  <div class="tab sel"><span class="x">标签1</span><div class="ul"></div></div>
+  <div class="tab un"><span class="x">标签2</span></div>
+  <div class="tab un"><span class="x">标签3</span></div>
+  <div class="tab un"><span class="x">标签4</span></div>
+  <div class="tab un"><span class="x">标签5</span></div>
+  <div class="tab un"><span class="x">标签6</span></div>
+  <div class="tab un"><span class="x">标签7</span></div>
+  <div class="tab un"><span class="x">标签8</span></div>
+</div>
+<div class="tabbar teq l1">
+  <div class="tab sel"><span class="x">标签1</span><div class="ul"></div></div>
+  <div class="tab un"><span class="x">标签2</span></div>
+  <div class="tab un"><span class="x">标签3</span></div>
+  <div class="tab un"><span class="x">标签4</span></div>
+  <div class="tab un"><span class="x">标签5</span></div>
+</div>
+
+<div class="demo">tab-下划线-二级-左固 / tab-下划线-二级-等分</div>
+<div class="tabbar tfix l2">
+  <div class="tab sel"><span class="x">标签1</span><div class="ul"></div></div>
+  <div class="tab un"><span class="x">标签2</span></div>
+  <div class="tab un"><span class="x">标签3</span></div>
+  <div class="tab un"><span class="x">标签4</span></div>
+  <div class="tab un"><span class="x">标签5</span></div>
+</div>
+<div class="tabbar teq l2">
+  <div class="tab sel"><span class="x">标签1</span><div class="ul"></div></div>
+  <div class="tab un"><span class="x">标签2</span></div>
+  <div class="tab un"><span class="x">标签3</span></div>
+  <div class="tab un"><span class="x">标签4</span></div>
+</div>
+
+<div class="demo">tab-胶囊-M-左固(高60·容器左24右0垂直hug)</div>
+<div style="padding:var(--SP4) var(--SP0);"><div class="pillfix">
+  <span class="pill pM sel">标签1</span>
+  <span class="pill pM un">标签2</span>
+  <span class="pill pM un">标签3</span>
+  <span class="pill pM un">标签4</span>
+  <span class="pill pM un">标签5</span>
+</div></div>
+
+<div class="demo">tab-胶囊-S(字24)-左固(高52·描边)/ tab-胶囊-S(字28)(未选灰底·已裁决)</div>
+<div class="pillrow">
+  <span class="pill pS24 sel">标签1</span>
+  <span class="pill pS24 un">标签2</span>
+  <span class="pill pS24 un">标签3</span>
+  <span class="pill pS24 un">标签4</span>
+  <span class="pill pS24 un">标签5</span>
+</div>
+<div class="pillrow">
+  <span class="pill pS28 sel">标签1</span>
+  <span class="pill pS28 un">标签2</span>
+  <span class="pill pS28 un">标签3</span>
+  <span class="pill pS28 un">标签4</span>
+</div>
+
+<div class="demo">tab-胶囊-XS-通栏(高44·容器灰底H2 圆角25 padding4·未选透灰)</div>
+<div class="center">
+  <div class="full">
+    <span class="pill pXS sel">标签1</span>
+    <span class="pill pXS un">标签2</span>
+    <span class="pill pXS un">标签3</span>
+  </div>
+</div>
+
+<div class="demo">tab-连体-60 / 80 / 100(段等宽·选中底R1字重500全档·容器750段组居中)</div>
+<div class="segwrap">
+  <div class="seg seg60">
+    <div class="s sel">标签1</div><div class="s un">标签2</div><div class="s un">标签3</div><div class="s un">标签4</div>
+  </div>
+</div>
+<div class="segwrap">
+  <div class="seg seg80">
+    <div class="s sel">标签1</div><div class="s un">标签2</div><div class="s un">标签3</div><div class="s un">标签4</div>
+  </div>
+</div>
+<div class="segwrap">
+  <div class="seg seg100">
+    <div class="s sel"><span class="nm">标签1</span><span class="pc up">+1.34%</span></div>
+    <div class="s un"><span class="nm">标签2</span><span class="pc up">+12.34%</span></div>
+    <div class="s un"><span class="nm">标签3</span><span class="pc up">+12.34%</span></div>
+    <div class="s un"><span class="nm">标签4</span><span class="pc down">-2.34%</span></div>
+  </div>
+</div>
+
+<script>
+  // 横滑:鼠标按住拖动 + 滚轮;拖动>5px不触发切换;触屏原生支持;容器隐藏滚动条
+  document.querySelectorAll('.tfix,.pillfix,.pillrow').forEach(el=>{
+    let down=false,startX=0,startL=0,moved=false;
+    el.addEventListener('pointerdown',e=>{down=true;moved=false;startX=e.clientX;startL=el.scrollLeft;});
+    window.addEventListener('pointermove',e=>{
+      if(!down)return;
+      const dx=e.clientX-startX;
+      if(Math.abs(dx)>5)moved=true;
+      if(moved)el.scrollLeft=startL-dx;
+    });
+    window.addEventListener('pointerup',()=>{down=false;});
+    el.addEventListener('click',e=>{ if(moved){e.stopPropagation();e.preventDefault();moved=false;} },true);
+    el.addEventListener('wheel',e=>{
+      if(el.scrollWidth>el.clientWidth){ el.scrollLeft+=(e.deltaY||e.deltaX); e.preventDefault(); }
+    },{passive:false});
+  });
+  // 点击切换:tab-下划线(移动下划线)
+  document.querySelectorAll('.tabbar').forEach(bar=>{
+    bar.querySelectorAll('.tab').forEach(tab=>{
+      tab.addEventListener('click',()=>{
+        bar.querySelectorAll('.tab').forEach(t=>{
+          t.classList.remove('sel'); t.classList.add('un');
+          const ul=t.querySelector('.ul'); if(ul) ul.remove();
+        });
+        tab.classList.remove('un'); tab.classList.add('sel');
+        const ul=document.createElement('div'); ul.className='ul'; tab.appendChild(ul);
+      });
+    });
+  });
+  // 点击切换:tab-胶囊(同组互斥)
+  document.querySelectorAll('.pill').forEach(p=>{
+    p.addEventListener('click',()=>{
+      [...p.parentElement.children].forEach(q=>{
+        if(q.classList.contains('pill')){ q.classList.remove('sel'); q.classList.add('un'); }
+      });
+      p.classList.remove('un'); p.classList.add('sel');
+    });
+  });
+  // 点击切换:tab-连体
+  document.querySelectorAll('.seg').forEach(seg=>{
+    seg.querySelectorAll('.s').forEach(s=>{
+      s.addEventListener('click',()=>{
+        seg.querySelectorAll('.s').forEach(q=>{ q.classList.remove('sel'); q.classList.add('un'); });
+        s.classList.remove('un'); s.classList.add('sel');
+      });
+    });
+  });
+</script>
+</body>
+</html>

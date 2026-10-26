@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=750">
+<title>开关 · 参考实现(设计系统 v2.1.0)</title>
+<style>
+  :root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+
+    --H1:#FFFFFF;--H2:#F2F4F8;--H3:#E2E8F2;--H7:#87878D;--H8:#55555E;--CT3:#55555E;--CT6:#FFFFFF;--H9:#0F0F1B;
+    --CP0:#F93838;
+    --sw-shadow-off-m:0 0 6px 0 rgba(135,135,141,.1);
+    --sw-shadow-on-m:0 0 6px 0 rgba(173,21,31,.3);
+    --sw-shadow-off-s:0 0 4.5px 0 rgba(135,135,141,.1);
+    --sw-shadow-on-s:0 0 4.5px 0 rgba(173,21,31,.3);
+  }
+  *{box-sizing:border-box;margin:var(--SP0);padding:var(--SP0);}
+  body{font-family:"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;background:var(--H2);width:750px;padding:var(--SP6);}
+  .blk{font-size:32px;font-weight:600;color:var(--H9);margin:var(--SP7) var(--SP0) var(--SP1);padding-left:var(--SP3);border-left:8px solid var(--CP0);}
+  .blk:first-child{margin-top:var(--SP0);}
+  .cap{font-size:19px;color:var(--H7);margin:var(--SP1) var(--SP0) var(--SP3);line-height:1.5;}
+  .card{background:var(--H1);border-radius:var(--RD4);margin-bottom:var(--SP4);overflow:hidden;}
+  .lab{font-size:19px;color:var(--H7);padding:var(--SP3) var(--SP6) var(--SP0);}
+  .lab b{color:var(--H9);font-weight:600;}
+  .note{font-size:18px;color:var(--H7);padding:var(--SP1) var(--SP6) var(--SP3);line-height:1.55;}
+  .note.ok{color:var(--G6);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--SP1) var(--SP0);padding:var(--SP3) var(--SP6) var(--SP5);}
+  .cell{display:flex;flex-direction:column;gap:var(--SP2);padding:var(--SP2) var(--SP0);}
+  .tag{font-size:18px;color:var(--H7);}
+
+  /* ===== 开关(全部 750 实测真值) ===== */
+  .sw{position:relative;display:inline-block;cursor:pointer;-webkit-tap-highlight-color:transparent;flex:0 0 auto;}
+  .sw .track{display:block;border-radius:var(--RD8);background:var(--H3);transition:background .2s;}
+  .sw .knob{position:absolute;top:4px;left:4px;background:var(--CT6);border-radius:50%;transition:left .2s,box-shadow .2s;}
+  /* 开关-M:80×48 · 滑块40 · 边距4 · 圆角真值40(钳制为全圆) */
+  .sw.m .track{width:80px;height:48px;}
+  .sw.m .knob{width:40px;height:40px;box-shadow:var(--sw-shadow-off-m);}
+  .sw.m.on .knob{left:36px;box-shadow:var(--sw-shadow-on-m);}
+  /* 开关-S:60×36 · 滑块30 · 边距3 */
+  .sw.s .track{width:60px;height:36px;}
+  .sw.s .knob{top:3px;left:3px;width:30px;height:30px;box-shadow:var(--sw-shadow-off-s);}
+  .sw.s.on .knob{left:27px;box-shadow:var(--sw-shadow-on-s);}
+  .sw.on .track{background:var(--CP0);}
+  /* 禁用:整体 opacity .5,不可交互 */
+  .sw.dis{opacity:.5;cursor:not-allowed;}
+  /* S 档可选文案:PingFang SC · S7(24) · --H8 · gap12 · padding 6/0(已拍板) */
+  .swrow{display:inline-flex;align-items:center;gap:var(--SP3);padding:var(--SP1) var(--SP0);}
+  .swrow .txt{font-size:24px;color:var(--CT3);line-height:36px;}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--G6:#05B063;}
+</style>
+</head>
+<body>
+
+<div class="blk">开关 Switch(节点 31:2549 · 八变体实测)</div>
+<div class="cap">族=开关 · 档位主键=Figma变体值 M/S · 状态尾缀 开/关(-禁用)。轨道:关 --H3 #E2E8F2(已拍板,源稿标注 F2F4F8 废弃)/ 开 --CP0 #F93838。点击可切换;禁用态不可点。</div>
+
+<div class="card">
+  <div class="lab"><b>开关-M</b>　80×48 · 滑块 40×40 白 --H1 · 边距 4 · 圆角真值 40(视觉=全圆胶囊) · 滑块投影:关 0 0 6 rgba(135,135,141,.1) / 开 0 0 6 rgba(173,21,31,.3)</div>
+  <div class="grid">
+    <div class="cell"><span class="tag">开关-M-关</span><span class="sw m"><span class="track"></span><span class="knob"></span></span></div>
+    <div class="cell"><span class="tag">开关-M-开</span><span class="sw m on"><span class="track"></span><span class="knob"></span></span></div>
+    <div class="cell"><span class="tag">开关-M-关-禁用</span><span class="sw m dis"><span class="track"></span><span class="knob"></span></span></div>
+    <div class="cell"><span class="tag">开关-M-开-禁用</span><span class="sw m on dis"><span class="track"></span><span class="knob"></span></span></div>
+  </div>
+  <div class="note ok">✅ 已拍板:滑块投影收录为「开关组件级源稿真值」例外——不具通用性,其他组件不得援引;系统"无阴影"硬规则不变</div>
+</div>
+
+<div class="card">
+  <div class="lab"><b>开关-S</b>　60×36 · 滑块 30×30 · 边距 3 · 圆角:SVG 封装未暴露,按全圆胶囊呈现 · 投影模糊 4.5(开/关同 M 档色)</div>
+  <div class="grid">
+    <div class="cell"><span class="tag">开关-S-关</span><span class="sw s"><span class="track"></span><span class="knob"></span></span></div>
+    <div class="cell"><span class="tag">开关-S-开</span><span class="sw s on"><span class="track"></span><span class="knob"></span></span></div>
+    <div class="cell"><span class="tag">开关-S-关-禁用</span><span class="sw s dis"><span class="track"></span><span class="knob"></span></span></div>
+    <div class="cell"><span class="tag">开关-S-开-禁用</span><span class="sw s on dis"><span class="track"></span><span class="knob"></span></span></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="lab"><b>开关-S · 文案属性开启</b>(可选,默认关)　文字 24(S7) · --H8 · 文字↔开关间距 12 · 行 padding 6/0 · 字体 PingFang SC(已拍板:源稿 ABeeZee 判占位疏忽)</div>
+  <div style="padding:var(--SP3) var(--SP6) var(--SP5);display:flex;flex-direction:column;gap:var(--SP1);">
+    <span class="swrow"><span class="txt">标签1</span><span class="sw s on"><span class="track"></span><span class="knob"></span></span></span>
+    <span class="swrow"><span class="txt">标签2</span><span class="sw s"><span class="track"></span><span class="knob"></span></span></span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="lab">规则(交互层)</div>
+  <div class="note" style="padding-top:var(--SP2);">
+    ① 点击切换 开↔关(轨道色 --H3↔--CP0、滑块位移、投影随态切换,过渡 0.2s)。② 禁用态整体 opacity 0.5,不响应点击;开/关均可处于禁用。③ M 档无文案属性;S 档「文案」为布尔可选属性,默认关闭,开启时按上卡规格。④ 开态红即品牌主操作色 --CP0,与主按钮同源(语义自洽,不改蓝)。
+  </div>
+</div>
+
+<div class="cap" style="margin-top:var(--SP5);">参考实现 · 设计系统 v2.1.0 · 规格见 references/components.md「五、开关」</div>
+
+<script>
+  document.querySelectorAll('.sw').forEach(sw=>{
+    sw.addEventListener('click',()=>{
+      if(sw.classList.contains('dis'))return;
+      sw.classList.toggle('on');
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# 设计合规 · git pre-commit 钩子
+# 作用:提交前对暂存的 .html 跑 check-page.py;有 P0(手画图标等硬违规)即阻断提交。
+# 安装见 INSTALL.md「合规校验接入」。
+#
+# skill 目录定位(版本无关):env > 自动找版本目录 > 兜底
+#   可固定:export GJZQ_SKILL_DIR=/abs/path/to/国金证券客户端设计系统-skill_vX.Y.Z
+SKILL_DIR="${GJZQ_SKILL_DIR:-$(ls -d 国金证券客户端设计系统-skill_v* 2>/dev/null | sort -V | tail -1)}"
+SKILL_DIR="${SKILL_DIR:-国金证券客户端设计系统-skill_v3.10.0}"
+
+staged="$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.html$' || true)"
+[ -z "$staged" ] && exit 0
+
+if [ ! -f "$SKILL_DIR/scripts/check-page.py" ]; then
+  echo "[design-compliance] 未找到 skill:$SKILL_DIR" >&2
+  echo "  请设 GJZQ_SKILL_DIR 指向 skill 目录后重试(本次不阻断)。" >&2
+  exit 0   # 找不到 skill 时不硬阻断,避免误伤非本项目仓库
+fi
+
+echo "[design-compliance] 校验暂存页面…"
+# shellcheck disable=SC2086
+if ! python3 "$SKILL_DIR/scripts/check-page.py" $staged; then
+  echo "" >&2
+  echo "✗ 提交被阻断:页面存在 P0 硬违规(如手画图标)。修复后重新提交。" >&2
+  echo "  如确需跳过(不建议):git commit --no-verify" >&2
+  exit 1
+fi

@@ -1,0 +1,30 @@
+<!-- 通用状态栏组件 status-bar
+     用法:放在任意导航栏/页面顶部。高度88(750 基准,标注值即实现值),左时间右(信号+5G+电池)。
+     颜色用 --CT1(深色文字);浅色背景上用 color:#fff 覆盖。 -->
+<div class="gj-statusbar">
+  <span class="gj-sb-time">9:25</span>
+  <span class="gj-sb-right">
+    <svg width="40" height="26" viewBox="0 0 22 14" fill="none" class="gj-sb-signal">
+      <rect x="0" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="6" y="6" width="3.5" height="8" rx="1"/>
+      <rect x="12" y="3" width="3.5" height="11" rx="1"/><rect x="18" y="0" width="3.5" height="14" rx="1"/></svg>
+    <span class="gj-sb-5g">5G</span>
+    <svg width="56" height="26" viewBox="0 0 28 13" fill="none" class="gj-sb-battery">
+      <rect x="0.5" y="0.8" width="24" height="11.5" rx="3" stroke-width="1" fill="none" opacity="0.4"/>
+      <rect x="2.3" y="2.6" width="19.5" height="7.9" rx="1.6"/>
+      <rect x="25.8" y="4" width="1.8" height="5" rx="0.9" opacity="0.4"/></svg>
+  </span>
+</div>
+<style>
+:root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+}
+
+.gj-statusbar{display:flex;justify-content:space-between;align-items:center;height:88px;padding:var(--SP0) var(--SP8);color:var(--CT1)}
+.gj-sb-time{font-size:30px;font-weight:600;letter-spacing:1px}
+.gj-sb-right{display:inline-flex;align-items:center;gap:var(--SP3)}
+.gj-sb-5g{font-size:28px;font-weight:600}
+.gj-sb-signal rect,.gj-sb-battery rect{fill:currentColor}
+.gj-sb-battery rect[fill="none"]{fill:none;stroke:currentColor}
+</style>

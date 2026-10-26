@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>行情/自选个股列表项</title>
+<style>
+:root{
+  /* SP/RD · 750px */
+  --SP0:0px; --SP1:4px; --SP2:8px; --SP3:12px; --SP4:16px; --SP5:20px; --SP6:24px; --SP7:32px; --SP8:40px; --SP9:60px; --SP10:80px; --RD0:0px; --RD1:4px; --RD2:8px; --RD3:12px; --RD4:16px; --RD5:20px; --RD6:24px; --RD7:32px; --RD8:40px; --RD9:999px; --RD10:6px;
+
+
+  --cb1:var(--H1);--cb4:var(--R1);--cb13:rgba(249,56,56,.08);--cb14:rgba(43,115,255,.08);--cb27:rgba(5,176,99,.08);
+  --ct1:var(--H9);--ct4:var(--H7);--cs1:var(--R6);--cs2:var(--G6);--cs3:var(--H8);
+  --cp0:var(--R6);--cf3:var(--B6);--cl3:var(--R6);--cl5:var(--B6);
+  --pf:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --num:"GJType","D-DIN","DIN Alternate",ui-monospace,monospace;
+}
+/* 行情/自选个股列表项 · 高100 · 宽750 · 默认白底 */
+.stk-row{position:relative;height:100px;width:750px;background:var(--cb1);overflow:hidden;font-family:var(--pf)}
+/* tick flash:价格刷新时按方向闪一下再消退;给行加 .flash-up / .flash-down 触发 */
+.stk-row.flash-up::before,.stk-row.flash-down::before{content:"";position:absolute;inset:0;pointer-events:none;animation:tick .9s ease-out}
+.stk-row.flash-up::before{background:linear-gradient(90deg,var(--CB26),var(--cb13))}
+.stk-row.flash-down::before{background:linear-gradient(90deg,var(--CB26),var(--cb27))}
+@keyframes tick{0%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.stk-row.flash-up::before,.stk-row.flash-down::before{animation:none;opacity:0}}
+.stk-left{position:absolute;left:24px;top:50%;transform:translateY(-50%);height:82px}
+.stk-nm{font-weight:400;font-size:32px;line-height:48px;color:var(--ct1)}
+.stk-meta{display:flex;gap:var(--SP1);align-items:center;margin-top:3px}
+.stk-code{font-family:var(--num);font-weight:500;font-size:24px;line-height:32px;color:var(--ct4);letter-spacing:.5px;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.gtag{height:32px;display:inline-flex;align-items:center;justify-content:center;padding:var(--SP0) 6px;border:1px solid;border-radius:var(--RD1);font-size:20px;line-height:30px;background:transparent;white-space:nowrap}
+.gtag.red{border-color:var(--cl3);color:var(--cp0)}
+.gtag.red.fill{background:var(--cb4)}
+.gtag.blue{border-color:var(--cl5);color:var(--cf3);background:var(--cb14)}
+.stk-nums{position:absolute;right:24px;top:32px;display:flex;height:36px}
+.stk-col{width:170px;text-align:right;font-family:var(--num);font-weight:500;font-size:36px;line-height:36px;letter-spacing:.5px;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.up{color:var(--cs1)}.down{color:var(--cs2)}.flat{color:var(--cs3)}
+body{margin:var(--SP0);background:var(--CB2)}
+.demo{width:750px;margin:var(--SP5) auto;background:var(--CB1);border-radius:var(--RD3);overflow:hidden;box-shadow:0 4px 16px rgba(20,24,40,.06)}
+.demo .stk-row+.stk-row{border-top:1px solid var(--CL2)}
+</style><style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--B6:#2B73FF;--CB1:#FFFFFF;--G6:#05B063;--H1:#FFFFFF;--H7:#87878D;--H8:#55555E;--H9:#0F0F1B;--R1:#FFF2F0;--R6:#F93838;}
+</style>
+<style>
+/* 本文件引用到的颜色 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB26:rgba(255,255,255,0);}
+</style>
+<style>
+/* 本文件引用到的 token(值同 assets/design-tokens.css 浅色) */
+:root{--CB2:#F2F4F8;--CL2:#EEEEEE;}
+</style>
+</head>
+<body>
+<div class="demo">
+  <div class="stk-row flash-up">
+    <div class="stk-left"><div class="stk-nm">中京电子</div>
+      <div class="stk-meta"><span class="stk-code">002679</span><span class="gtag red">科</span><span class="gtag red fill">好股</span></div></div>
+    <div class="stk-nums"><div class="stk-col up">7.94</div><div class="stk-col up">+1.61%</div><div class="stk-col up">+0.03</div></div>
+  </div>
+  <div class="stk-row">
+    <div class="stk-left"><div class="stk-nm">天齐锂业</div>
+      <div class="stk-meta"><span class="stk-code">002679</span><span class="gtag red">融</span><span class="gtag blue">持</span></div></div>
+    <div class="stk-nums"><div class="stk-col flat">7.94</div><div class="stk-col flat">0.00%</div><div class="stk-col flat">0.00</div></div>
+  </div>
+  <div class="stk-row flash-down">
+    <div class="stk-left"><div class="stk-nm">中京电子</div>
+      <div class="stk-meta"><span class="stk-code">002679</span><span class="gtag red">科</span></div></div>
+    <div class="stk-nums"><div class="stk-col down">7.94</div><div class="stk-col down">-1.61%</div><div class="stk-col down">-0.03</div></div>
+  </div>
+</div>
+<script>
+/* 演示 tick flash:每 2.4s 重新触发一次闪烁 */
+setInterval(()=>{document.querySelectorAll('.stk-row.flash-up,.stk-row.flash-down').forEach(r=>{
+  const c=[...r.classList].find(x=>x.startsWith('flash-'));r.classList.remove(c);void r.offsetWidth;r.classList.add(c);});},2400);
+</script>
+</body></html>
